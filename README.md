@@ -166,6 +166,43 @@ A comprehensive internationalization improvement focused on adapting the expense
 
 This localization demonstrates the application's flexibility and commitment to accessibility for Spanish-speaking users. The systematic approach to translation—covering page headers, form inputs, table headers, and user feedback messages—ensures a consistent and natural experience throughout the expenses management workflow. The clean separation between presentation and logic allowed for straightforward internationalization without requiring architectural changes.
 
+#### Expenses List Date Range Evolution
+
+A powerful filtering enhancement focused on enabling users to filter expenses by custom date ranges:
+
+**Initial State (MVP):**
+- Basic filtering limited to category and search text
+- No temporal filtering capabilities
+- Users could only see all expenses or filter by category
+- Limited ability to analyze spending within specific time periods
+
+**Iterative Improvements:**
+1. **Date Range Picker Component** - Integrated a sophisticated calendar-based selection system
+   - Added dual-month calendar view using `react-day-picker` for easy date range selection
+   - Implemented popover trigger button showing selected date range or placeholder text
+   - Calendar displays two months side-by-side for convenient range selection across month boundaries
+   - Used `date-fns` for consistent date formatting (dd/MM/yyyy format)
+
+2. **UI Store Integration** - Seamlessly connected with existing state management
+   - Leveraged existing `startDate` and `endDate` fields already defined in `ExpenseFilters` type
+   - Date range state managed through Zustand store alongside category and search filters
+   - `setFilters` and `resetFilters` actions automatically handle date range updates
+   - Clear filters button now includes date range in the reset operation
+
+3. **Visual Integration** - Enhanced filter bar with cohesive design
+   - Date picker button styled consistently with other filter controls
+   - Dynamic button text shows selected range or prompts user to "Seleccionar fechas"
+   - Calendar icon from lucide-react provides clear visual affordance
+   - Responsive design maintains usability across different screen sizes
+
+4. **Backend Compatibility** - Worked seamlessly with existing database layer
+   - Database filtering logic (`getFilteredExpenses`) already supported date range filtering
+   - Date comparison properly handles Date objects from the store
+   - No modifications needed to data layer or API hooks
+   - Filter changes trigger automatic query invalidation and refetch
+
+This enhancement demonstrates the benefits of forward-thinking architecture. The `ExpenseFilters` type was designed with `startDate` and `endDate` fields from the beginning, and the database layer already implemented the filtering logic, making it trivial to add the UI component. The modular component design and separation of concerns allowed this significant feature addition with changes only to the filters component, showcasing how well-architected applications can evolve gracefully without requiring extensive refactoring.
+
 ## How to Run the Project
 
 ### Development Mode

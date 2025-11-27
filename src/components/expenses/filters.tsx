@@ -1,6 +1,8 @@
 'use client';
 
-import { Search, X } from 'lucide-react';
+import { Search, X, Calendar as CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,13 +12,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { useUIStore } from '@/stores/ui-store';
 import { EXPENSE_CATEGORIES, CATEGORY_LABELS } from '@/types/expense';
+import { cn } from '@/lib/utils';
 
 export function ExpenseFilters() {
   const { filters, setFilters, resetFilters } = useUIStore();
 
-  const hasFilters = filters.category || filters.search;
+  const hasFilters = filters.category || filters.search || filters.startDate || filters.endDate;
+
+  const dateRange: DateRange | undefined = filters.startDate || filters.endDate
+    ? {
+        from: filters.startDate,
+        to: filters.endDate,
+      }
+    : undefined;
+
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setFilters({
+      startDate: range?.from,
+      endDate: range?.to,
+    });
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -29,6 +52,41 @@ export function ExpenseFilters() {
           className="pl-9"
         />
       </div>
+
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn(
+              'w-[280px] justify-start text-left font-normal',
+              !dateRange && 'text-muted-foreground'
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {dateRange?.from ? (
+              dateRange.to ? (
+                <>
+                  {format(dateRange.from, 'dd/MM/yyyy')} - {format(dateRange.to, 'dd/MM/yyyy')}
+                </>
+              ) : (
+                format(dateRange.from, 'dd/MM/yyyy')
+              )
+            ) : (
+              <span>Seleccionar fechas</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            mode="range"
+            defaultMonth={dateRange?.from}
+            selected={dateRange}
+            onSelect={handleDateRangeChange}
+            numberOfMonths={2}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
 
       <Select
         value={filters.category || 'all'}
