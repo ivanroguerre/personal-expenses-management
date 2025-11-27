@@ -191,6 +191,45 @@ A descriptive enhancement focused on providing better context for the daily aver
 
 This enhancement demonstrates the value of providing contextual information alongside calculated metrics. By showing both the average amount and the count of expenses, users gain a more complete picture of their daily spending patterns. The implementation efficiently reuses existing calculations and maintains grammatical correctness through conditional rendering, showcasing attention to both technical efficiency and user experience details. This pattern of pairing aggregated statistics with their underlying data points is a UX best practice in analytics dashboards.
 
+#### Dashboard Top Spending Category Evolution
+
+A user experience enhancement focused on displaying human-readable category labels instead of raw category identifiers in the top spending category statistic:
+
+**Initial State:**
+- Top spending category card displayed raw category ID (e.g., "food", "transport", "entertainment")
+- Internal database keys exposed directly to users without translation
+- Inconsistent with other parts of the UI where categories displayed as formatted Spanish labels
+- Less intuitive user experience requiring users to mentally translate technical IDs to meaningful categories
+- No use of existing `CATEGORY_LABELS` mapping already defined in the types
+
+**Iterative Improvements:**
+1. **Added Category Label Import** - Enhanced component to use existing label mappings (`src/components/dashboard/stats-cards.tsx`)
+   - Imported `CATEGORY_LABELS` constant from `@/types/expense`
+   - Imported `ExpenseCategory` type for proper type casting
+   - Leveraged existing infrastructure rather than creating duplicate label definitions
+   - Maintained consistency with category display throughout the application
+
+2. **Updated Value Display Logic** - Transformed raw ID to human-readable label
+   - Modified card value from `stats.topSpendingCategory` to `CATEGORY_LABELS[stats.topSpendingCategory as ExpenseCategory]`
+   - Applied safe type assertion to ensure proper mapping lookup
+   - Maintained fallback "N/A" display when no category data exists
+   - No changes needed to data fetching or statistics calculation logic
+
+3. **Preserved Existing Functionality** - Enhanced display without breaking existing features
+   - Category determination logic in database layer remained unchanged
+   - Stats calculation continues to return raw category IDs
+   - Type safety maintained through proper TypeScript typing
+   - All conditional rendering (N/A state, descriptions) still works correctly
+
+4. **Improved User Understanding** - Enhanced dashboard clarity with proper labels
+   - Users now see "Comida" instead of "food", "Transporte" instead of "transport"
+   - Consistent with Spanish localization throughout the application
+   - Category information immediately recognizable without mental translation
+   - Professional presentation matching user expectations for analytics displays
+   - Seamless integration with existing color-coded category badges used elsewhere
+
+This enhancement demonstrates the importance of presenting data in user-friendly formats rather than exposing technical implementation details. By utilizing the existing `CATEGORY_LABELS` mapping, the change required minimal code modifications while significantly improving the user experience. This pattern of separating internal data representation from user-facing display is a fundamental UX principle that ensures interfaces remain intuitive and accessible. The implementation showcases how well-designed type systems and constants can be reused across components to maintain consistency and reduce duplication.
+
 #### Dashboard Redirect Buttons Evolution
 
 A key usability improvement focused on enhancing navigation from the dashboard to the expenses list:

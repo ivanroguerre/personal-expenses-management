@@ -12,7 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CURRENCY } from "@/lib/constants";
 
-import type { ExpenseStats } from "@/types/expense";
+import type { ExpenseStats, ExpenseCategory } from "@/types/expense";
+import { CATEGORY_LABELS } from "@/types/expense";
 
 interface StatsCardsProps {
   stats?: ExpenseStats;
@@ -98,7 +99,9 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
     },
     {
       title: "Categoría con mayor gasto",
-      value: stats.topSpendingCategory || "N/A",
+      value: stats.topSpendingCategory 
+        ? CATEGORY_LABELS[stats.topSpendingCategory as ExpenseCategory] 
+        : "N/A",
       description: stats.topSpendingCategory
         ? `De toda la historia de gastos`
         : "No hay gastos aún",
