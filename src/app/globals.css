@@ -116,5 +116,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+  code, pre {
+    font-family: var(--font-mono), monospace;
   }
 }
