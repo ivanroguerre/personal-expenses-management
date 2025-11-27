@@ -73,6 +73,23 @@ export function ExpenseForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Descripción</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="¿Para qué fue este gasto?"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="amount"
           render={({ field }) => (
             <FormItem>
@@ -89,23 +106,6 @@ export function ExpenseForm({
                     )
                   }
                   value={field.value ?? ''}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Descripción</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="¿Para qué fue este gasto?"
-                  {...field}
                 />
               </FormControl>
               <FormMessage />

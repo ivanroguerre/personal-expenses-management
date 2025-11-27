@@ -474,6 +474,45 @@ A comprehensive internationalization enhancement focused on adapting the expense
 
 This comprehensive localization completes the Spanish language transformation of the expense management workflow, covering both creation and editing interfaces. Users can now add, view, edit, and delete expenses entirely in Spanish, from page titles and form labels to validation messages and calendar interfaces. The systematic approach ensures linguistic consistency across all user touchpoints while maintaining code quality and architectural integrity. The integration of Spanish locale for date formatting demonstrates attention to cultural conventions, as date presentation differs between languages. This enhancement showcases the application's commitment to accessibility and user experience for Spanish-speaking audiences, providing a fully native language experience without compromising the technical foundation.
 
+#### Add/Edit Expenses Field Order Evolution
+
+A UX-focused refinement to optimize the form layout based on information hierarchy and natural data entry flow:
+
+**Initial State:**
+- Field order: "Monto" (Amount), "Descripción" (Description), "Categoría" (Category), "Fecha" (Date)
+- Amount field positioned first as primary input
+- Description placed second, requiring users to think about quantity before context
+- Standard form order but not aligned with natural expense logging workflow
+
+**Iterative Improvements:**
+1. **Reordered Form Fields** - Restructured input sequence to match natural thought process
+   - New order: "Descripción", "Monto", "Categoría", "Fecha"
+   - Description moved to first position as the primary identifier for each expense
+   - Amount positioned second after users have established what the expense was for
+   - Category placed third for logical classification after description and amount
+   - Date remains in fourth position, maintaining its role as temporal metadata
+
+2. **Improved Data Entry Flow** - Enhanced user experience through better field progression
+   - Users now naturally describe what they spent money on before entering the amount
+   - Cognitive flow matches real-world expense reporting: "I bought X for Y amount"
+   - Reduces mental context switching during data entry
+   - More intuitive tab order for keyboard navigation users
+
+3. **Form Component Consistency** - Applied changes consistently across all form instances
+   - Updated `expense-form.tsx` component to reflect new field order
+   - Reordering affects both create new expense and edit expense flows
+   - Maintained all existing validation logic and error handling
+   - No changes to form submission or data processing logic
+   - Preserved all field labels, placeholders, and help text
+
+4. **Maintained Default Values** - Ensured proper pre-population for edit operations
+   - Default values in form initialization remain correctly mapped to new field positions
+   - Edit mode continues to populate all fields accurately from existing expense data
+   - Visual field order change doesn't affect underlying data structure or storage
+   - Form state management and react-hook-form integration unaffected
+
+This reordering demonstrates how thoughtful form design can reduce cognitive friction during data entry. By placing the description field first, users can establish context before thinking about numerical values, creating a more natural narrative flow: "I spent money on [description] which cost [amount] in the [category] category on [date]." This seemingly minor adjustment aligns the form structure with how users mentally process and recall expenses, potentially reducing data entry errors and improving overall satisfaction with the expense logging experience.
+
 ## How to Run the Project
 
 ### Development Mode
