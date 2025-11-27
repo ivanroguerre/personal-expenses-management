@@ -101,6 +101,33 @@ Another refinement focused on improving the date display format in the recent ex
 
 This seemingly small enhancement significantly improves data clarity, especially for users tracking expenses over multiple years. The change demonstrates how attention to UX details can make the application more intuitive and informative without adding complexity.
 
+#### Dashboard Redirect Buttons Evolution
+
+A key usability improvement focused on enhancing navigation from the dashboard to the expenses list:
+
+**Initial State (MVP):**
+- Single "Agregar Gasto" (Add Expense) button in dashboard header
+- Required users to use sidebar navigation to access the expenses list
+- No quick path from dashboard to full expenses view
+
+**Iterative Improvements:**
+1. **Added Expenses List Navigation** - Introduced a secondary button for direct access
+   - New "Ver Gastos" (View Expenses) button with List icon from lucide-react
+   - Links directly to `/expenses` page for instant access to the full expenses table
+   - Improves discoverability of the expenses list feature
+
+2. **Visual Hierarchy** - Implemented button variants to establish clear action priority
+   - "Ver Gastos" uses `outline` variant for secondary action styling
+   - "Agregar Gasto" maintains default/primary variant for emphasis
+   - Clear visual distinction helps users understand the primary action (adding expenses) while providing easy access to viewing all expenses
+
+3. **Improved User Flow** - Enhanced navigation patterns throughout the application
+   - Users can now navigate directly from dashboard analytics to detailed expense list
+   - Reduces clicks needed to move between dashboard overview and data management
+   - Creates a more fluid user experience between viewing insights and managing data
+
+This enhancement demonstrates how small UX improvements can significantly reduce friction in user workflows. By providing multiple navigation paths to key features, the application becomes more intuitive and efficient for daily expense management tasks.
+
 ## How to Run the Project
 
 ### Development Mode

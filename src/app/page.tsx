@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, List } from 'lucide-react';
 
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,12 @@ export default function DashboardPage() {
         title="Panel de Control"
         description="Resumen de tus hábitos de gasto"
       >
+        <Button asChild variant="outline">
+          <Link href="/expenses">
+            <List className="mr-2 h-4 w-4" />
+            Ver Gastos
+          </Link>
+        </Button>
         <Button asChild>
           <Link href="/expenses/new">
             <PlusCircle className="mr-2 h-4 w-4" />
