@@ -513,6 +513,52 @@ A UX-focused refinement to optimize the form layout based on information hierarc
 
 This reordering demonstrates how thoughtful form design can reduce cognitive friction during data entry. By placing the description field first, users can establish context before thinking about numerical values, creating a more natural narrative flow: "I spent money on [description] which cost [amount] in the [category] category on [date]." This seemingly minor adjustment aligns the form structure with how users mentally process and recall expenses, potentially reducing data entry errors and improving overall satisfaction with the expense logging experience.
 
+#### Add/Edit Expenses Categories Language Evolution
+
+A localization enhancement focused on translating expense category labels to Spanish while maintaining backward compatibility with existing user data:
+
+**Initial State:**
+- Category labels displayed in English across the entire application
+- Categories: "Food & Dining", "Transportation", "Entertainment", "Utilities & Bills", "Health & Medical", "Shopping", "Other"
+- Internal category keys stored in IndexedDB: 'food', 'transport', 'entertainment', 'utilities', 'health', 'shopping', 'other'
+- Inconsistent with the Spanish-localized interface throughout the rest of the application
+- Users with existing data in their browser's IndexedDB needed to be considered
+
+**Iterative Improvements:**
+1. **Category Labels Translation** - Updated display labels to Spanish in the types definition (`src/types/expense.ts`)
+   - Changed "Food & Dining" to "Comida"
+   - Changed "Transportation" to "Transporte"
+   - Changed "Entertainment" to "Entretenimiento"
+   - Changed "Utilities & Bills" to "Servicios"
+   - Changed "Health & Medical" to "Salud"
+   - Changed "Shopping" to "Compras"
+   - Changed "Other" to "Otros"
+   - Maintained internal keys unchanged for data compatibility
+
+2. **Backward Compatibility Preservation** - Ensured existing user data remained intact
+   - Internal category keys ('food', 'transport', etc.) kept unchanged in `EXPENSE_CATEGORIES`
+   - No database migration required as stored values remain the same
+   - Existing expenses automatically display with new Spanish labels
+   - Zero data loss or corruption risk for users with existing data
+   - No breaking changes to the data model or database schema
+
+3. **Application-Wide Consistency** - Spanish labels now display throughout all interfaces
+   - Expense form category dropdown shows Spanish labels
+   - Expenses table category column displays Spanish labels
+   - Filter dropdowns show Spanish category names
+   - Dashboard analytics and charts use Spanish category labels
+   - Color-coded category badges maintain their styling with new labels
+   - Seamless integration across all components using `CATEGORY_LABELS`
+
+4. **Type Safety Maintained** - TypeScript types ensure category usage remains correct
+   - `ExpenseCategory` type union still enforces valid category values
+   - `CATEGORY_LABELS` Record type ensures all categories have Spanish labels
+   - `CATEGORY_COLORS` Record type maintains color mappings with no changes needed
+   - Compile-time checking prevents missing or incorrect category references
+   - No runtime errors introduced by the label changes
+
+This localization strategy demonstrates a pragmatic approach to internationalization with existing user data. By maintaining the internal category keys while only changing display labels, the application achieves complete Spanish localization without requiring database migrations or risking data integrity. The architecture's separation between data storage (internal keys) and presentation (display labels) proved invaluable, allowing this change to be implemented safely with a single file modification. This approach ensures that users with months or years of expense data can seamlessly continue using the application with the new Spanish interface, with all their historical data displaying correctly under the new labels.
+
 ## How to Run the Project
 
 ### Development Mode

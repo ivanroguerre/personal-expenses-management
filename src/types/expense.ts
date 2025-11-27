@@ -40,13 +40,13 @@ export interface ExpenseSort {
 }
 
 export const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
-  food: 'Food & Dining',
-  transport: 'Transportation',
-  entertainment: 'Entertainment',
-  utilities: 'Utilities & Bills',
-  health: 'Health & Medical',
-  shopping: 'Shopping',
-  other: 'Other',
+  food: 'Comida',
+  transport: 'Transporte',
+  entertainment: 'Entretenimiento',
+  utilities: 'Servicios',
+  health: 'Salud',
+  shopping: 'Compras',
+  other: 'Otros',
 };
 
 export const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
