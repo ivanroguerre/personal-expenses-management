@@ -3,9 +3,9 @@
 import {
   TrendingUp,
   TrendingDown,
-  Receipt,
   Calculator,
   PieChart,
+  CalendarIcon,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,7 @@ interface StatsCardsProps {
     topSpendingCategory: string | null;
     totalThisMonth: number;
     totalLastMonth: number;
+    currentMonthExpenseCount: number;
     monthlyChange: number;
     averageTodayExpense: number;
   };
@@ -89,10 +90,10 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
       iconColor: "text-emerald-500",
     },
     {
-      title: "Mes Anterior",
-      value: formatCurrency(stats.totalLastMonth),
-      description: "Total del mes anterior",
-      icon: Receipt,
+      title: "Número de gastos del mes",
+      value: stats.currentMonthExpenseCount.toString(),
+      description: "Del presente mes",
+      icon: CalendarIcon,
       iconColor: "text-blue-500",
     },
   ];

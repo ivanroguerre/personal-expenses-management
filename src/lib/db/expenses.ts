@@ -191,6 +191,7 @@ export async function getExpenseStats() {
     topSpendingCategory: topSpendingCategory.category || null,
     totalThisMonth,
     totalLastMonth,
+    currentMonthExpenseCount: thisMonthExpenses.length,
     monthlyChange:
       totalLastMonth > 0
         ? ((totalThisMonth - totalLastMonth) / totalLastMonth) * 100
