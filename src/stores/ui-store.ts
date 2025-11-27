@@ -21,6 +21,13 @@ interface UIState {
   sort: ExpenseSort;
   setSort: (field: SortField, direction?: SortDirection) => void;
 
+  // Pagination
+  page: number;
+  pageSize: number;
+  setPage: (page: number) => void;
+  setPageSize: (pageSize: number) => void;
+  resetPagination: () => void;
+
   // Delete confirmation modal
   deleteModalOpen: boolean;
   expenseToDelete: string | null;
@@ -46,8 +53,9 @@ export const useUIStore = create<UIState>((set) => ({
   setFilters: (filters) =>
     set((state) => ({
       filters: { ...state.filters, ...filters },
+      page: 1, // Reset to first page when filters change
     })),
-  resetFilters: () => set({ filters: defaultFilters }),
+  resetFilters: () => set({ filters: defaultFilters, page: 1 }),
 
   // Expense sorting
   sort: defaultSort,
@@ -61,7 +69,15 @@ export const useUIStore = create<UIState>((set) => ({
             ? 'desc'
             : 'asc'),
       },
+      page: 1, // Reset to first page when sorting changes
     })),
+
+  // Pagination
+  page: 1,
+  pageSize: 20,
+  setPage: (page) => set({ page }),
+  setPageSize: (pageSize) => set({ pageSize, page: 1 }),
+  resetPagination: () => set({ page: 1, pageSize: 20 }),
 
   // Delete confirmation modal
   deleteModalOpen: false,

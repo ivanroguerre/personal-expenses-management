@@ -320,6 +320,48 @@ A UX-focused refinement to optimize the table layout based on information hierar
 
 This reordering demonstrates how small layout adjustments can significantly impact usability. By placing the most frequently referenced information (description and amount) at the beginning of each row, users can scan and process expense data more efficiently. The change prioritizes "what was spent and how much" over "when it was spent," which better aligns with typical expense review workflows where users want to quickly identify and verify spending amounts rather than focusing primarily on chronological order.
 
+#### Expenses List Pagination Evolution
+
+A scalability-focused enhancement to handle large datasets efficiently by implementing table pagination:
+
+**Initial State:**
+- All expenses displayed in a single, continuously scrolling table
+- No limit on the number of rows shown simultaneously
+- Performance concerns with large datasets (hundreds or thousands of expenses)
+- Difficult to navigate and find specific expenses in long lists
+- Overwhelming user experience when viewing extensive expense history
+
+**Iterative Improvements:**
+1. **Pagination State Management** - Integrated pagination controls into the existing UI store
+   - Added `page` state (default: 1) to track current page position
+   - Added `pageSize` state (default: 20) to control rows per page
+   - Implemented `setPage()` and `setPageSize()` actions for navigation control
+   - Added `resetPagination()` utility to restore default pagination state
+   - Existing `setFilters()` and `setSort()` now automatically reset to page 1 to prevent empty page views
+
+2. **Table Pagination Logic** - Enhanced table component with intelligent data slicing
+   - Calculated pagination values: `totalItems`, `totalPages`, `startIndex`, `endIndex`
+   - Implemented expense slicing to show only current page's subset of data
+   - Added automatic page adjustment when total pages decrease (prevents showing empty pages)
+   - Maintained all existing functionality (sorting, filtering, loading states) while paginating results
+   - Zero performance impact on filtering or sorting operations
+
+3. **Pagination Controls UI** - Designed intuitive navigation interface below the table
+   - **Page size selector** - Dropdown with options: 10, 20, 50, 100 rows per page
+   - **Navigation buttons** - Previous/Next page buttons with ChevronLeft/ChevronRight icons
+   - **Information display** - Shows "X-Y de Z" format (e.g., "1-20 de 150 gastos")
+   - **Smart disabled states** - Buttons disabled at first/last page to prevent invalid navigation
+   - Consistent Spanish localization matching the rest of the expenses interface
+
+4. **User Experience Optimization** - Thoughtful design decisions for better usability
+   - Default 20 rows strikes balance between information density and performance
+   - Page size selector positioned on the left for easy access
+   - Navigation controls and info display aligned to the right for visual hierarchy
+   - Responsive layout maintains usability across different screen sizes
+   - Shadcn Select and Button components ensure design consistency with existing UI
+
+This pagination implementation demonstrates the application's readiness to scale with growing datasets. Rather than implementing the full-featured Shadcn DataTable component, this lightweight custom solution leverages the existing table structure and adds only the essential pagination features needed. The clean integration with the UI store and automatic page reset behavior create an intuitive experience where users don't have to think about pagination edge cases—the system handles them automatically. This approach maintains code simplicity while solving the core scalability challenge of displaying large expense lists.
+
 ## How to Run the Project
 
 ### Development Mode
