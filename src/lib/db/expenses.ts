@@ -5,6 +5,7 @@ import type {
   ExpenseFormData,
   ExpenseFilters,
   ExpenseSort,
+  ExpenseStats,
 } from "@/types/expense";
 
 export async function getAllExpenses(): Promise<Expense[]> {
@@ -138,7 +139,7 @@ export async function deleteAllExpenses(): Promise<void> {
 }
 
 // Analytics helpers
-export async function getExpenseStats() {
+export async function getExpenseStats(): Promise<ExpenseStats> {
   const expenses = await getAllExpenses();
   const now = new Date();
   const currentMonth = now.getMonth();
@@ -219,6 +220,8 @@ export async function getExpenseStats() {
     monthlyChange:
       totalLastMonth > 0
         ? ((totalThisMonth - totalLastMonth) / totalLastMonth) * 100
+        : totalThisMonth > 0
+        ? null
         : 0,
     categoryTotals,
     monthlyTotals,

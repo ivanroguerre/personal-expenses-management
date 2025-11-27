@@ -101,6 +101,54 @@ Another refinement focused on improving the date display format in the recent ex
 
 This seemingly small enhancement significantly improves data clarity, especially for users tracking expenses over multiple years. The change demonstrates how attention to UX details can make the application more intuitive and informative without adding complexity.
 
+#### Dashboard Total Month Expenses Stat Evolution
+
+A data accuracy and UX enhancement focused on properly handling edge cases in monthly expense comparison calculations:
+
+**Initial State:**
+- Monthly change percentage calculated as: `((totalThisMonth - totalLastMonth) / totalLastMonth) * 100`
+- When last month had zero expenses (`totalLastMonth = 0`), returned `0%` to avoid division by zero
+- Misleading display: going from $0 to any positive amount showed "0% change" instead of indicating new spending
+- No semantic distinction between "no change" and "unable to calculate change"
+- Stats interface defined inline without type reusability
+
+**Iterative Improvements:**
+1. **Created ExpenseStats Interface** - Added formal type definition for statistics data (`src/types/expense.ts`)
+   - Defined `ExpenseStats` interface with all statistics fields properly typed
+   - `monthlyChange` property typed as `number | null` to support edge cases
+   - Includes all dashboard metrics: totals, counts, category breakdowns, and temporal aggregations
+   - Provides type safety and reusability across components and hooks
+   - Serves as single source of truth for statistics data structure
+
+2. **Enhanced Monthly Change Calculation** - Implemented three-case logic for accurate representations (`src/lib/db/expenses.ts`)
+   - **Case 1:** `totalLastMonth > 0` - Normal calculation: `((totalThisMonth - totalLastMonth) / totalLastMonth) * 100`
+   - **Case 2:** `totalLastMonth = 0` AND `totalThisMonth > 0` - Returns `null` (new spending, no baseline for comparison)
+   - **Case 3:** Both months are `0` - Returns `0` (truly no change between zero and zero)
+   - Function signature updated to return `Promise<ExpenseStats>` for type consistency
+   - Mathematically honest: `null` indicates "not calculable" rather than falsely claiming 0% change
+
+3. **Updated StatsCards Component** - Enhanced UI to handle null values with appropriate messaging (`src/components/dashboard/stats-cards.tsx`)
+   - Imported and used `ExpenseStats` type instead of inline interface definition
+   - Created helper function `getMonthlyChangeDescription()` to generate context-aware text:
+     - `null` → "Nuevo gasto este mes" (New spending this month)
+     - `0` → "Sin cambios desde el mes pasado" (No changes from last month)
+     - Positive/negative → "+X% desde el mes pasado" or "X% desde el mes pasado"
+   - Created helper function `getMonthlyChangeIcon()` to select appropriate visual indicator
+   - Created helper function `getMonthlyChangeColor()` to apply semantic colors:
+     - `null` → Blue (informational - new spending)
+     - Positive → Red (warning - spending increased)
+     - Negative → Green (positive - spending decreased)
+     - Zero → Muted (neutral - no change)
+
+4. **Improved User Understanding** - Provided clear, actionable information in the dashboard
+   - Users now receive accurate feedback when starting to track expenses in a new month
+   - "Nuevo gasto este mes" message sets clear expectations rather than confusing with 0%
+   - Blue color for new spending differentiates from both increases (red) and decreases (green)
+   - Maintains mathematical accuracy while improving user comprehension
+   - Semantic nullability pattern enables future enhancements (e.g., showing "N/A" or additional context)
+
+This enhancement demonstrates the importance of handling edge cases thoughtfully in data-driven applications. By recognizing that percentage change is undefined when the baseline is zero, the implementation avoids misleading users with mathematically incorrect information. The use of TypeScript's union types (`number | null`) enforces proper null handling throughout the component tree, preventing runtime errors while enabling more informative UI states. This pattern of semantic nullability—using `null` to represent "not applicable" rather than forcing a numeric value—is a best practice for representing real-world data constraints in type-safe applications.
+
 #### Dashboard Redirect Buttons Evolution
 
 A key usability improvement focused on enhancing navigation from the dashboard to the expenses list:

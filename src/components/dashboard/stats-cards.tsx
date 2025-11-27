@@ -12,16 +12,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CURRENCY } from "@/lib/constants";
 
+import type { ExpenseStats } from "@/types/expense";
+
 interface StatsCardsProps {
-  stats?: {
-    totalExpenses: number;
-    topSpendingCategory: string | null;
-    totalThisMonth: number;
-    totalLastMonth: number;
-    currentMonthExpenseCount: number;
-    monthlyChange: number;
-    averageTodayExpense: number;
-  };
+  stats?: ExpenseStats;
   isLoading?: boolean;
 }
 
@@ -55,23 +49,45 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
       maximumFractionDigits: 2,
     })}`;
 
+  const getMonthlyChangeDescription = () => {
+    if (stats.monthlyChange === null) {
+      return "Nuevo gasto este mes";
+    }
+    if (stats.monthlyChange === 0) {
+      return "Sin cambios desde el mes pasado";
+    }
+    return `${stats.monthlyChange > 0 ? "+" : ""}${stats.monthlyChange.toFixed(
+      1
+    )}% desde el mes pasado`;
+  };
+
+  const getMonthlyChangeIcon = () => {
+    if (stats.monthlyChange === null || stats.monthlyChange >= 0) {
+      return TrendingUp;
+    }
+    return TrendingDown;
+  };
+
+  const getMonthlyChangeColor = () => {
+    if (stats.monthlyChange === null) {
+      return "text-blue-500";
+    }
+    if (stats.monthlyChange > 0) {
+      return "text-red-500";
+    }
+    if (stats.monthlyChange < 0) {
+      return "text-emerald-500";
+    }
+    return "text-muted-foreground";
+  };
+
   const cards = [
     {
       title: "Total gastado este mes",
       value: formatCurrency(stats.totalThisMonth),
-      description:
-        stats.monthlyChange !== 0
-          ? `${stats.monthlyChange > 0 ? "+" : ""}${stats.monthlyChange.toFixed(
-              1
-            )}% desde el mes pasado`
-          : "Sin cambios desde el mes pasado",
-      icon: stats.monthlyChange >= 0 ? TrendingUp : TrendingDown,
-      iconColor:
-        stats.monthlyChange > 0
-          ? "text-red-500"
-          : stats.monthlyChange < 0
-          ? "text-emerald-500"
-          : "text-muted-foreground",
+      description: getMonthlyChangeDescription(),
+      icon: getMonthlyChangeIcon(),
+      iconColor: getMonthlyChangeColor(),
     },
     {
       title: "Promedio diario de gastos",

@@ -59,3 +59,16 @@ export const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
   other: '#6b7280',
 };
 
+export interface ExpenseStats {
+  totalExpenses: number;
+  topSpendingCategory: string | null;
+  totalThisMonth: number;
+  totalLastMonth: number;
+  currentMonthExpenseCount: number;
+  monthlyChange: number | null;
+  categoryTotals: Record<string, number>;
+  monthlyTotals: Record<string, number>;
+  dailyTotals: Record<string, number>;
+  averageTodayExpense: number;
+}
+
