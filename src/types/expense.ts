@@ -70,5 +70,6 @@ export interface ExpenseStats {
   monthlyTotals: Record<string, number>;
   dailyTotals: Record<string, number>;
   averageTodayExpense: number;
+  todayExpenseCount: number;
 }
 

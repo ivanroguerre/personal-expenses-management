@@ -149,6 +149,48 @@ A data accuracy and UX enhancement focused on properly handling edge cases in mo
 
 This enhancement demonstrates the importance of handling edge cases thoughtfully in data-driven applications. By recognizing that percentage change is undefined when the baseline is zero, the implementation avoids misleading users with mathematically incorrect information. The use of TypeScript's union types (`number | null`) enforces proper null handling throughout the component tree, preventing runtime errors while enabling more informative UI states. This pattern of semantic nullability—using `null` to represent "not applicable" rather than forcing a numeric value—is a best practice for representing real-world data constraints in type-safe applications.
 
+#### Dashboard Daily Average Stat Evolution
+
+A descriptive enhancement focused on providing better context for the daily average expense statistic by showing the total count of expenses:
+
+**Initial State:**
+- Daily average expense card displayed calculated average amount
+- Description text was generic: "Por gasto diario" (Per daily expense)
+- No indication of how many expenses were used to calculate the average
+- Users couldn't quickly assess if the average was based on 1 expense or 10 expenses
+- Less transparency in the calculation methodology
+
+**Iterative Improvements:**
+1. **Extended ExpenseStats Interface** - Added support for today's expense count (`src/types/expense.ts`)
+   - Added `todayExpenseCount: number` property to `ExpenseStats` interface
+   - Provides type-safe access to the count of expenses for the current day
+   - Complements existing `averageTodayExpense` field for better context
+   - Maintains consistency with existing count fields like `currentMonthExpenseCount`
+
+2. **Enhanced Statistics Calculation** - Updated backend to return expense count (`src/lib/db/expenses.ts`)
+   - Modified `getExpenseStats()` function to include `todayExpenseCount` in return object
+   - Leverages existing `todayExpenses` array calculation (already filtered for current day)
+   - Simply returns `todayExpenses.length` alongside the average calculation
+   - No additional database queries or performance impact
+   - Reuses the same filtered data used for computing `averageTodayExpense`
+
+3. **Improved Card Description** - Enhanced user-facing text with dynamic count display (`src/components/dashboard/stats-cards.tsx`)
+   - Changed from static "Por gasto diario" to dynamic template literal
+   - New description: `De un total de ${stats.todayExpenseCount} ${stats.todayExpenseCount === 1 ? 'gasto' : 'gastos'}`
+   - Displays "De un total de 1 gasto" for single expense (singular form)
+   - Displays "De un total de X gastos" for multiple expenses (plural form)
+   - Grammatically correct Spanish with proper singular/plural handling
+   - Provides immediate transparency about the sample size used for averaging
+
+4. **Enhanced Data Transparency** - Users now have complete context for the daily average metric
+   - Clear understanding of whether average is based on few or many expenses
+   - Helps users assess the reliability and representativeness of the average
+   - Particularly valuable on days with unusual spending patterns
+   - Example: "€45.50 - De un total de 3 gastos" tells users the average is from 3 transactions
+   - Better decision-making support when reviewing daily spending habits
+
+This enhancement demonstrates the value of providing contextual information alongside calculated metrics. By showing both the average amount and the count of expenses, users gain a more complete picture of their daily spending patterns. The implementation efficiently reuses existing calculations and maintains grammatical correctness through conditional rendering, showcasing attention to both technical efficiency and user experience details. This pattern of pairing aggregated statistics with their underlying data points is a UX best practice in analytics dashboards.
+
 #### Dashboard Redirect Buttons Evolution
 
 A key usability improvement focused on enhancing navigation from the dashboard to the expenses list:

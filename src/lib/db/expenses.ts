@@ -231,6 +231,7 @@ export async function getExpenseStats(): Promise<ExpenseStats> {
         ? todayExpenses.reduce((sum, e) => sum + e.amount, 0) /
           todayExpenses.length
         : 0,
+    todayExpenseCount: todayExpenses.length,
   };
 }
 

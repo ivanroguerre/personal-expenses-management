@@ -92,7 +92,7 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
     {
       title: "Promedio diario de gastos",
       value: formatCurrency(stats.averageTodayExpense),
-      description: "Por gasto diario",
+      description: `De un total de ${stats.todayExpenseCount} ${stats.todayExpenseCount === 1 ? 'gasto' : 'gastos'}`,
       icon: Calculator,
       iconColor: "text-purple-500",
     },
