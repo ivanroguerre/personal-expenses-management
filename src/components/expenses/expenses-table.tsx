@@ -64,10 +64,10 @@ export function ExpensesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Fecha</TableHead>
               <TableHead>Descripción</TableHead>
-              <TableHead>Categoría</TableHead>
               <TableHead className="text-right">Monto</TableHead>
+              <TableHead>Categoría</TableHead>
+              <TableHead>Fecha</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -75,16 +75,16 @@ export function ExpensesTable({
             {Array.from({ length: 5 }).map((_, i) => (
               <TableRow key={i}>
                 <TableCell>
-                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-40" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-4 w-16 ml-auto" />
                 </TableCell>
                 <TableCell>
                   <Skeleton className="h-6 w-24" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-4 w-16 ml-auto" />
+                  <Skeleton className="h-4 w-24" />
                 </TableCell>
                 <TableCell>
                   <Skeleton className="h-8 w-8" />
@@ -116,13 +116,13 @@ export function ExpensesTable({
         <TableHeader>
           <TableRow>
             <TableHead>
-              <SortButton field="date" sort={sort} onSort={setSort}>
-                Fecha
-              </SortButton>
-            </TableHead>
-            <TableHead>
               <SortButton field="description" sort={sort} onSort={setSort}>
                 Descripción
+              </SortButton>
+            </TableHead>
+            <TableHead className="text-right">
+              <SortButton field="amount" sort={sort} onSort={setSort}>
+                Monto
               </SortButton>
             </TableHead>
             <TableHead>
@@ -130,9 +130,9 @@ export function ExpensesTable({
                 Categoría
               </SortButton>
             </TableHead>
-            <TableHead className="text-right">
-              <SortButton field="amount" sort={sort} onSort={setSort}>
-                Monto
+            <TableHead>
+              <SortButton field="date" sort={sort} onSort={setSort}>
+                Fecha
               </SortButton>
             </TableHead>
             <TableHead className="w-[50px]"></TableHead>
@@ -141,12 +141,12 @@ export function ExpensesTable({
         <TableBody>
           {expenses.map((expense) => (
             <TableRow key={expense.id}>
-              <TableCell>{columns.renderDate(expense)}</TableCell>
               <TableCell>{columns.renderDescription(expense)}</TableCell>
-              <TableCell>{columns.renderCategory(expense)}</TableCell>
               <TableCell className="text-right">
                 {columns.renderAmount(expense)}
               </TableCell>
+              <TableCell>{columns.renderCategory(expense)}</TableCell>
+              <TableCell>{columns.renderDate(expense)}</TableCell>
               <TableCell>{columns.renderActions(expense)}</TableCell>
             </TableRow>
           ))}

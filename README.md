@@ -241,6 +241,44 @@ A localization refinement focused on adapting the calendar date picker interface
 
 This localization improvement completes the Spanish language experience for the expenses filtering system, ensuring that all user-facing elements—including the sophisticated date range picker—are consistently presented in Spanish. The use of custom formatters demonstrates attention to linguistic detail, as Spanish capitalization conventions differ from English in calendar contexts. This enhancement showcases how modern date libraries like `date-fns` and `react-day-picker` make internationalization straightforward when properly integrated.
 
+#### Expenses List Column Order Evolution
+
+A UX-focused refinement to optimize the table layout based on information hierarchy and scanning patterns:
+
+**Initial State:**
+- Column order: "Fecha" (Date), "Descripción" (Description), "Categoría" (Category), "Monto" (Amount)
+- Date column positioned first as primary information
+- Amount displayed last, requiring users to scan across the entire row
+- Conventional chronological-first approach common in many data tables
+
+**Iterative Improvements:**
+1. **Reordered Column Layout** - Restructured table columns to prioritize key expense information
+   - New order: "Descripción", "Monto", "Categoría", "Fecha"
+   - Description moved to first position as the primary identifier for each expense
+   - Amount positioned second for immediate visibility of spending values
+   - Category placed third for quick visual categorization via color-coded badges
+   - Date moved to fourth position, still accessible but no longer the primary focus
+
+2. **Header Updates** - Applied consistent column order across all table states
+   - Updated sortable table headers in the main view to match new order
+   - Modified loading skeleton structure to reflect new column positions
+   - Maintained SortButton functionality for all columns in their new positions
+   - Preserved all existing sort capabilities without breaking functionality
+
+3. **Data Row Consistency** - Ensured data cells aligned perfectly with new header structure
+   - Updated TableCell rendering order to match header sequence
+   - Maintained proper text alignment (amount stays right-aligned)
+   - Preserved column-specific styling (e.g., category badges, date formatting)
+   - Actions column remained in the rightmost position for consistent interaction patterns
+
+4. **Improved Scanning Efficiency** - Enhanced user experience through better information hierarchy
+   - Users can now quickly identify expenses by description without reading full rows
+   - Amount visibility improved for rapid spending assessment
+   - Visual category badges provide at-a-glance classification after amount
+   - Date information available but doesn't dominate the visual hierarchy
+
+This reordering demonstrates how small layout adjustments can significantly impact usability. By placing the most frequently referenced information (description and amount) at the beginning of each row, users can scan and process expense data more efficiently. The change prioritizes "what was spent and how much" over "when it was spent," which better aligns with typical expense review workflows where users want to quickly identify and verify spending amounts rather than focusing primarily on chronological order.
+
 ## How to Run the Project
 
 ### Development Mode
