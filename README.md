@@ -1292,6 +1292,819 @@ Potential features for future development:
 - 🌙 Dark mode theme
 - 📎 Attachment support (receipts, invoices)
 
+## Potential AI Integration
+
+This section documents the architectural considerations and implementation strategies for integrating AI capabilities into the expense management application, including automatic expense categorization, financial assistant features, and intelligent analytics.
+
+### 1. AI Workflow Design & Agentic Pattern
+
+#### Recommended Pattern: ReAct (Reasoning + Acting) Agent with Tool Use
+
+The ReAct pattern enables the AI to:
+1. **Reason** about the user's request
+2. **Act** by calling predefined tools
+3. **Observe** the results
+4. **Iterate** until the task is complete
+
+This pattern is ideal for financial analysis because it allows multi-step reasoning with access to real expense data.
+
+#### Tool Definitions
+
+```typescript
+// src/lib/ai/tools.ts
+export const aiTools = {
+  getExpensesByDateRange: {
+    name: "getExpensesByDateRange",
+    description: "Retrieves expenses within a specified date range",
+    parameters: {
+      type: "object",
+      properties: {
+        startDate: { type: "string", format: "date" },
+        endDate: { type: "string", format: "date" }
+      },
+      required: ["startDate", "endDate"]
+    },
+    execute: async (params: { startDate: string; endDate: string }) => {
+      return getFilteredExpenses({
+        startDate: new Date(params.startDate),
+        endDate: new Date(params.endDate)
+      });
+    }
+  },
+  
+  getExpenseStats: {
+    name: "getExpenseStats",
+    description: "Retrieves aggregated expense statistics including totals, averages, and category breakdowns",
+    parameters: { type: "object", properties: {} },
+    execute: async () => getExpenseStats()
+  },
+  
+  getCategoryBreakdown: {
+    name: "getCategoryBreakdown",
+    description: "Returns spending breakdown by category for a specific month",
+    parameters: {
+      type: "object",
+      properties: {
+        month: { type: "string", description: "Month in YYYY-MM format" }
+      },
+      required: ["month"]
+    },
+    execute: async (params: { month: string }) => {
+      const [year, month] = params.month.split('-').map(Number);
+      const startDate = new Date(year, month - 1, 1);
+      const endDate = new Date(year, month, 0);
+      const expenses = await getFilteredExpenses({ startDate, endDate });
+      return expenses.reduce((acc, exp) => {
+        acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
+        return acc;
+      }, {} as Record<string, number>);
+    }
+  },
+  
+  compareMonths: {
+    name: "compareMonths",
+    description: "Compares spending between two months",
+    parameters: {
+      type: "object",
+      properties: {
+        month1: { type: "string", description: "First month (YYYY-MM)" },
+        month2: { type: "string", description: "Second month (YYYY-MM)" }
+      },
+      required: ["month1", "month2"]
+    },
+    execute: async (params: { month1: string; month2: string }) => {
+      // Implementation for month comparison
+    }
+  },
+  
+  findAnomalies: {
+    name: "findAnomalies",
+    description: "Detects unusual spending patterns or outliers",
+    parameters: {
+      type: "object",
+      properties: {
+        period: { type: "string", description: "Analysis period (YYYY-MM)" }
+      },
+      required: ["period"]
+    },
+    execute: async (params: { period: string }) => {
+      // Implementation for anomaly detection
+    }
+  },
+
+  suggestCategory: {
+    name: "suggestCategory",
+    description: "Suggests a category for an expense based on its description",
+    parameters: {
+      type: "object",
+      properties: {
+        description: { type: "string" }
+      },
+      required: ["description"]
+    },
+    execute: async (params: { description: string }) => {
+      // LLM-based categorization
+    }
+  }
+};
+```
+
+#### Agent Implementation
+
+```typescript
+// src/lib/ai/agent.ts
+import { aiTools } from './tools';
+import { createLLMClient } from './client';
+
+const FINANCIAL_AGENT_PROMPT = `You are a personal finance assistant with access to the user's expense data.
+Your role is to analyze spending patterns, identify optimization opportunities, and provide actionable advice.
+
+Available tools:
+- getExpensesByDateRange: Fetch expenses within a date range
+- getExpenseStats: Get aggregated statistics
+- getCategoryBreakdown: Get spending by category for a month
+- compareMonths: Compare two months of spending
+- findAnomalies: Detect unusual spending patterns
+
+Always base your analysis on actual data retrieved through tools. Be specific with numbers and percentages.
+Provide actionable, concrete recommendations.`;
+
+interface AgentMessage {
+  role: 'system' | 'user' | 'assistant' | 'tool';
+  content: string;
+  tool_call_id?: string;
+  tool_calls?: ToolCall[];
+}
+
+interface ToolCall {
+  id: string;
+  function: {
+    name: string;
+    arguments: string;
+  };
+}
+
+export async function runFinancialAgent(userQuery: string): Promise<string> {
+  const llm = createLLMClient();
+  const messages: AgentMessage[] = [
+    { role: 'system', content: FINANCIAL_AGENT_PROMPT },
+    { role: 'user', content: userQuery }
+  ];
+  
+  const maxIterations = 10;
+  let iterations = 0;
+  
+  while (iterations < maxIterations) {
+    iterations++;
+    
+    const response = await llm.chat({
+      messages,
+      tools: Object.values(aiTools).map(t => ({
+        type: 'function',
+        function: {
+          name: t.name,
+          description: t.description,
+          parameters: t.parameters
+        }
+      })),
+      tool_choice: 'auto'
+    });
+    
+    const assistantMessage = response.choices[0].message;
+    messages.push(assistantMessage);
+    
+    if (!assistantMessage.tool_calls || assistantMessage.tool_calls.length === 0) {
+      return assistantMessage.content;
+    }
+    
+    // Execute tool calls in parallel
+    const toolResults = await Promise.all(
+      assistantMessage.tool_calls.map(async (toolCall) => {
+        const tool = aiTools[toolCall.function.name as keyof typeof aiTools];
+        const args = JSON.parse(toolCall.function.arguments);
+        const result = await tool.execute(args);
+        return {
+          role: 'tool' as const,
+          tool_call_id: toolCall.id,
+          content: JSON.stringify(result)
+        };
+      })
+    );
+    
+    messages.push(...toolResults);
+  }
+  
+  throw new Error('Agent exceeded maximum iterations');
+}
+```
+
+### 2. Integration with Existing Architecture
+
+#### Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           UI LAYER (React/Next.js)                          │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
+│  │  Dashboard  │  │  Expenses   │  │   Forms     │  │   AI Chat Panel     │ │
+│  │   Page      │  │   Table     │  │  (CRUD)     │  │   (New Component)   │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              HOOKS LAYER                                     │
+│  ┌───────────────┐  ┌────────────────────┐  ┌─────────────────────────────┐ │
+│  │ useExpenses   │  │ useExpenseMutations│  │ useAIAssistant (NEW)        │ │
+│  │ useExpense    │  │ (create/update/    │  │ useAICategorizeSuggestion   │ │
+│  │ useExpenseStats│  │  delete)           │  │ useAIStreamingResponse      │ │
+│  └───────────────┘  └────────────────────┘  └─────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                             SERVICE LAYER                                    │
+│  ┌─────────────────────────────┐  ┌─────────────────────────────────────┐   │
+│  │     lib/db/expenses.ts      │  │        lib/ai/ (NEW)                │   │
+│  │  ─────────────────────────  │  │  ─────────────────────────────────  │   │
+│  │  • getAllExpenses()         │  │  • agent.ts (ReAct agent logic)     │   │
+│  │  • getExpenseById()         │  │  • tools.ts (Tool definitions)      │   │
+│  │  • createExpense()          │  │  • client.ts (LLM API client)       │   │
+│  │  • updateExpense()          │  │  • prompts.ts (System prompts)      │   │
+│  │  • deleteExpense()          │  │  • streaming.ts (SSE handling)      │   │
+│  │  • getExpenseStats()        │  │                                     │   │
+│  │  • getFilteredExpenses()    │◄─┼──(AI tools call existing DB funcs)  │   │
+│  └─────────────────────────────┘  └─────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────────┘
+                          │                              │
+┌─────────────────────────┴───────┐  ┌───────────────────┴───────────────────┐
+│     IndexedDB (Dexie.js)        │  │         External LLM API              │
+│  ┌───────────────────────────┐  │  │  ┌─────────────────────────────────┐  │
+│  │    Expenses Table         │  │  │  │  OpenAI / Anthropic / Local    │  │
+│  │    (Local Storage)        │  │  │  │  via API Route or Edge Func    │  │
+│  └───────────────────────────┘  │  │  └─────────────────────────────────┘  │
+└─────────────────────────────────┘  └───────────────────────────────────────┘
+```
+
+#### Proposed File Structure
+
+```
+src/
+├── lib/
+│   ├── ai/
+│   │   ├── index.ts              # Public exports
+│   │   ├── agent.ts              # ReAct agent implementation
+│   │   ├── tools.ts              # Tool definitions and executors
+│   │   ├── client.ts             # LLM client abstraction
+│   │   ├── prompts.ts            # System prompts and templates
+│   │   ├── streaming.ts          # Streaming response utilities
+│   │   └── types.ts              # AI-specific TypeScript types
+│   └── db/
+│       ├── index.ts              # (existing)
+│       └── expenses.ts           # (existing - tools will call these)
+├── hooks/
+│   ├── use-expenses.ts           # (existing)
+│   ├── use-expense-mutations.ts  # (existing)
+│   ├── use-ai-assistant.ts       # NEW: Chat interaction hook
+│   ├── use-ai-categorize.ts      # NEW: Auto-categorization hook
+│   └── use-ai-streaming.ts       # NEW: Streaming response hook
+├── components/
+│   ├── ai/
+│   │   ├── chat-interface.tsx    # Chat UI component
+│   │   ├── chat-message.tsx      # Individual message component
+│   │   ├── suggestion-card.tsx   # AI suggestion display
+│   │   ├── category-suggest.tsx  # Inline category suggestion
+│   │   └── loading-indicator.tsx # AI-specific loading states
+│   └── expenses/
+│       └── expense-form.tsx      # (modified to include AI suggestions)
+├── stores/
+│   ├── ui-store.ts               # (existing)
+│   └── ai-store.ts               # NEW: AI conversation state
+├── app/
+│   └── api/
+│       └── ai/
+│           └── chat/
+│               └── route.ts      # API route for LLM calls
+└── types/
+    ├── expense.ts                # (existing)
+    └── ai.ts                     # NEW: AI-related types
+```
+
+#### Hook Implementation
+
+```typescript
+// src/hooks/use-ai-assistant.ts
+import { useMutation } from '@tanstack/react-query';
+import { useAIStore } from '@/stores/ai-store';
+
+export function useAIAssistant() {
+  const { messages, addMessage, setStreaming, appendToLastMessage } = useAIStore();
+  
+  const sendMessage = useMutation({
+    mutationFn: async (userMessage: string) => {
+      addMessage({ role: 'user', content: userMessage });
+      setStreaming(true);
+      
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: userMessage,
+          history: messages 
+        })
+      });
+      
+      if (!response.body) throw new Error('No response body');
+      
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      
+      addMessage({ role: 'assistant', content: '' });
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        appendToLastMessage(chunk);
+      }
+      
+      setStreaming(false);
+    }
+  });
+  
+  return {
+    messages,
+    sendMessage: sendMessage.mutate,
+    isLoading: sendMessage.isPending
+  };
+}
+```
+
+#### Store Implementation
+
+```typescript
+// src/stores/ai-store.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+interface AIMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: Date;
+  toolCalls?: {
+    name: string;
+    result: unknown;
+  }[];
+}
+
+interface AIState {
+  messages: AIMessage[];
+  isStreaming: boolean;
+  isPanelOpen: boolean;
+  
+  addMessage: (message: Omit<AIMessage, 'id' | 'timestamp'>) => void;
+  appendToLastMessage: (content: string) => void;
+  setStreaming: (streaming: boolean) => void;
+  togglePanel: () => void;
+  clearHistory: () => void;
+}
+
+export const useAIStore = create<AIState>()(
+  persist(
+    (set) => ({
+      messages: [],
+      isStreaming: false,
+      isPanelOpen: false,
+      
+      addMessage: (message) => set((state) => ({
+        messages: [...state.messages, {
+          ...message,
+          id: crypto.randomUUID(),
+          timestamp: new Date()
+        }]
+      })),
+      
+      appendToLastMessage: (content) => set((state) => {
+        const messages = [...state.messages];
+        const last = messages[messages.length - 1];
+        if (last) {
+          last.content += content;
+        }
+        return { messages };
+      }),
+      
+      setStreaming: (isStreaming) => set({ isStreaming }),
+      togglePanel: () => set((state) => ({ isPanelOpen: !state.isPanelOpen })),
+      clearHistory: () => set({ messages: [] })
+    }),
+    {
+      name: 'ai-assistant-storage',
+      partialize: (state) => ({ messages: state.messages })
+    }
+  )
+);
+```
+
+### 3. State, Error, and Latency Considerations
+
+#### State Management Strategy
+
+| State Type | Solution | Rationale |
+|------------|----------|-----------|
+| Conversation History | Zustand with `persist` | Survives page refreshes, enables conversation continuity |
+| Streaming Response | Zustand (non-persisted) | Real-time updates during response generation |
+| Loading States | React Query `isPending` | Consistent with existing data fetching patterns |
+| Cached AI Responses | React Query with custom `queryKey` | Prevents duplicate requests for identical queries |
+| UI State (panel open/close) | Zustand | Consistent with existing UI state management |
+
+#### Error Handling Implementation
+
+```typescript
+// src/lib/ai/error-handling.ts
+export class AIError extends Error {
+  constructor(
+    message: string,
+    public readonly code: AIErrorCode,
+    public readonly retryable: boolean = false,
+    public readonly retryAfter?: number
+  ) {
+    super(message);
+    this.name = 'AIError';
+  }
+}
+
+export type AIErrorCode = 
+  | 'RATE_LIMIT'
+  | 'API_ERROR'
+  | 'TIMEOUT'
+  | 'CONTEXT_TOO_LONG'
+  | 'INVALID_RESPONSE'
+  | 'TOOL_EXECUTION_FAILED'
+  | 'NETWORK_ERROR';
+
+export const AI_ERROR_MESSAGES: Record<AIErrorCode, string> = {
+  RATE_LIMIT: 'Too many requests. Please wait a moment.',
+  API_ERROR: 'AI service temporarily unavailable.',
+  TIMEOUT: 'Request timed out. Please try again.',
+  CONTEXT_TOO_LONG: 'Conversation too long. Please start a new chat.',
+  INVALID_RESPONSE: 'Received invalid response. Please try again.',
+  TOOL_EXECUTION_FAILED: 'Failed to retrieve expense data.',
+  NETWORK_ERROR: 'Network connection error. Check your internet.'
+};
+
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  options: {
+    maxRetries?: number;
+    baseDelay?: number;
+    maxDelay?: number;
+  } = {}
+): Promise<T> {
+  const { maxRetries = 3, baseDelay = 1000, maxDelay = 10000 } = options;
+  let lastError: Error;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
+      
+      if (error instanceof AIError && !error.retryable) {
+        throw error;
+      }
+      
+      const delay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw lastError!;
+}
+
+export function parseAIError(error: unknown): AIError {
+  if (error instanceof AIError) return error;
+  
+  if (error instanceof Error) {
+    if (error.message.includes('rate limit')) {
+      return new AIError(AI_ERROR_MESSAGES.RATE_LIMIT, 'RATE_LIMIT', true, 60);
+    }
+    if (error.message.includes('timeout')) {
+      return new AIError(AI_ERROR_MESSAGES.TIMEOUT, 'TIMEOUT', true);
+    }
+    if (error.message.includes('context length')) {
+      return new AIError(AI_ERROR_MESSAGES.CONTEXT_TOO_LONG, 'CONTEXT_TOO_LONG', false);
+    }
+  }
+  
+  return new AIError(AI_ERROR_MESSAGES.API_ERROR, 'API_ERROR', true);
+}
+```
+
+#### Latency Mitigation Strategies
+
+| Strategy | Implementation | Purpose |
+|----------|---------------|---------|
+| **Streaming Responses** | Server-Sent Events (SSE) | Display response progressively as it's generated |
+| **Optimistic UI** | Immediate user message display | Instant feedback while waiting for AI response |
+| **Request Timeout** | `AbortController` with 30s limit | Prevent indefinite waiting |
+| **Response Caching** | React Query with high `staleTime` | Avoid duplicate requests for similar queries |
+| **Debounced Auto-categorize** | 500ms debounce on description input | Reduce API calls during typing |
+
+```typescript
+// src/lib/ai/streaming.ts
+export async function* streamResponse(
+  response: Response
+): AsyncGenerator<string> {
+  if (!response.body) {
+    throw new AIError('No response body', 'INVALID_RESPONSE');
+  }
+  
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      yield decoder.decode(value, { stream: true });
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+export async function callAIWithTimeout(
+  endpoint: string,
+  body: unknown,
+  timeoutMs: number = 30000
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: controller.signal
+    });
+    
+    if (!response.ok) {
+      throw new AIError(
+        `HTTP ${response.status}`,
+        response.status === 429 ? 'RATE_LIMIT' : 'API_ERROR',
+        response.status === 429
+      );
+    }
+    
+    return response;
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new AIError('Request timed out', 'TIMEOUT', true);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+```
+
+### 4. Agentic AI Workflow Diagram
+
+The following diagram illustrates the complete workflow for the feature: **"Analyze my monthly expenses and suggest optimizations"**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                         AGENTIC AI WORKFLOW                                      │
+│              Feature: "Analyze my expenses and suggest optimizations"            │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────┐
+    │   USER   │
+    │          │──┐
+    └──────────┘  │ "Analyze my November expenses and suggest ways to save money"
+                  │
+                  ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              1. INPUT PROCESSING                                 │
+│  ┌────────────────────────────────────────────────────────────────────────────┐ │
+│  │ • Validate user input                                                       │ │
+│  │ • Retrieve conversation history from store                                  │ │
+│  │ • Prepare system prompt with tool definitions                               │ │
+│  │ • Initialize ReAct loop                                                     │ │
+│  └────────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                         2. ReAct AGENT LOOP                                      │
+│                                                                                  │
+│    ┌──────────────┐      ┌──────────────┐      ┌──────────────┐                 │
+│    │   THOUGHT    │─────▶│    ACTION    │─────▶│ OBSERVATION  │                 │
+│    │  (Reasoning) │      │ (Tool Call)  │      │   (Result)   │                 │
+│    └──────────────┘      └──────────────┘      └──────────────┘                 │
+│           ▲                                            │                         │
+│           └────────────────────────────────────────────┘                         │
+│                        (Repeat until complete)                                   │
+│                                                                                  │
+│  ╔════════════════════════════════════════════════════════════════════════════╗ │
+│  ║ ITERATION 1                                                                 ║ │
+│  ║ ───────────────────────────────────────────────────────────────────────── ║ │
+│  ║ THOUGHT: "I need to retrieve expenses for November 2024 to analyze them"  ║ │
+│  ║ ACTION:  getExpensesByDateRange("2024-11-01", "2024-11-30")               ║ │
+│  ║ OBSERVATION: [                                                             ║ │
+│  ║   { id: "1", amount: 45.50, category: "food", description: "Groceries" }, ║ │
+│  ║   { id: "2", amount: 120.00, category: "entertainment", ... },            ║ │
+│  ║   ... 47 more expenses                                                     ║ │
+│  ║ ]                                                                          ║ │
+│  ╠════════════════════════════════════════════════════════════════════════════╣ │
+│  ║ ITERATION 2                                                                 ║ │
+│  ║ ───────────────────────────────────────────────────────────────────────── ║ │
+│  ║ THOUGHT: "Now I need October data to identify spending changes"           ║ │
+│  ║ ACTION:  compareMonths("2024-11", "2024-10")                              ║ │
+│  ║ OBSERVATION: {                                                             ║ │
+│  ║   november: { total: 2847.50, byCategory: {...} },                        ║ │
+│  ║   october: { total: 2312.00, byCategory: {...} },                         ║ │
+│  ║   difference: 535.50,                                                      ║ │
+│  ║   percentChange: 23.16,                                                    ║ │
+│  ║   categoryChanges: { entertainment: +180, food: +95, ... }                ║ │
+│  ║ }                                                                          ║ │
+│  ╠════════════════════════════════════════════════════════════════════════════╣ │
+│  ║ ITERATION 3                                                                 ║ │
+│  ║ ───────────────────────────────────────────────────────────────────────── ║ │
+│  ║ THOUGHT: "Let me check for any unusual spending patterns"                 ║ │
+│  ║ ACTION:  findAnomalies("2024-11")                                         ║ │
+│  ║ OBSERVATION: {                                                             ║ │
+│  ║   anomalies: [                                                             ║ │
+│  ║     { date: "2024-11-15", amount: 350, category: "shopping",              ║ │
+│  ║       description: "Electronics", zscore: 2.8 },                          ║ │
+│  ║     { date: "2024-11-22", amount: 180, category: "entertainment",         ║ │
+│  ║       description: "Concert tickets", zscore: 2.1 }                       ║ │
+│  ║   ],                                                                       ║ │
+│  ║   recurringPatterns: [ /* daily coffee, weekly groceries */ ]             ║ │
+│  ║ }                                                                          ║ │
+│  ╠════════════════════════════════════════════════════════════════════════════╣ │
+│  ║ ITERATION 4                                                                 ║ │
+│  ║ ───────────────────────────────────────────────────────────────────────── ║ │
+│  ║ THOUGHT: "I have enough data to provide comprehensive analysis"           ║ │
+│  ║ ACTION:  COMPLETE - Generate final response                               ║ │
+│  ╚════════════════════════════════════════════════════════════════════════════╝ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           3. RESPONSE SYNTHESIS                                  │
+│  ┌────────────────────────────────────────────────────────────────────────────┐ │
+│  │ LLM generates structured response based on collected data:                  │ │
+│  │                                                                             │ │
+│  │ "📊 **November 2024 Analysis**                                             │ │
+│  │                                                                             │ │
+│  │ **Overview:**                                                               │ │
+│  │ • Total spent: $2,847.50 (+23% vs October)                                 │ │
+│  │ • 49 transactions across 6 categories                                      │ │
+│  │ • Highest category: Food ($890)                                            │ │
+│  │                                                                             │ │
+│  │ **Key Findings:**                                                           │ │
+│  │ 1. Entertainment spending increased 45% ($580 vs $400)                     │ │
+│  │ 2. Two unusual purchases detected totaling $530                            │ │
+│  │ 3. Daily coffee habit: ~$150/month (22 purchases)                          │ │
+│  │                                                                             │ │
+│  │ **Optimization Suggestions:**                                               │ │
+│  │ 1. 🎬 Set entertainment budget cap at $450/month (save $130)               │ │
+│  │ 2. ☕ Reduce coffee purchases to 3x/week (save ~$60)                       │ │
+│  │ 3. 🛒 Batch grocery shopping to reduce impulse buys                        │ │
+│  │                                                                             │ │
+│  │ **Potential Monthly Savings: $190-250**"                                   │ │
+│  └────────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                        4. STREAMING TO CLIENT                                    │
+│  ┌────────────────────────────────────────────────────────────────────────────┐ │
+│  │ • Response streamed via SSE as tokens are generated                        │ │
+│  │ • UI updates progressively with each chunk                                 │ │
+│  │ • Message stored in Zustand store                                          │ │
+│  │ • Conversation persisted to localStorage                                   │ │
+│  └────────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                        │
+                                        ▼
+                                   ┌──────────┐
+                                   │   USER   │
+                                   │  (sees   │
+                                   │ response)│
+                                   └──────────┘
+```
+
+### Available AI Tools Reference
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                            TOOL REGISTRY                                         │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│  ┌─────────────────────────┐  ┌─────────────────────────┐                       │
+│  │ getExpensesByDateRange  │  │ getExpenseStats         │                       │
+│  ├─────────────────────────┤  ├─────────────────────────┤                       │
+│  │ Params:                 │  │ Params: none            │                       │
+│  │  • startDate: Date      │  │                         │                       │
+│  │  • endDate: Date        │  │ Returns:                │                       │
+│  │                         │  │  • totalExpenses        │                       │
+│  │ Returns: Expense[]      │  │  • totalThisMonth       │                       │
+│  │                         │  │  • categoryTotals       │                       │
+│  │ Calls: getFilteredExp() │  │  • monthlyTotals        │                       │
+│  └─────────────────────────┘  └─────────────────────────┘                       │
+│                                                                                  │
+│  ┌─────────────────────────┐  ┌─────────────────────────┐                       │
+│  │ getCategoryBreakdown    │  │ compareMonths           │                       │
+│  ├─────────────────────────┤  ├─────────────────────────┤                       │
+│  │ Params:                 │  │ Params:                 │                       │
+│  │  • month: "YYYY-MM"     │  │  • month1: "YYYY-MM"    │                       │
+│  │                         │  │  • month2: "YYYY-MM"    │                       │
+│  │ Returns:                │  │                         │                       │
+│  │  Record<Category, $>    │  │ Returns:                │                       │
+│  │                         │  │  • totals per month     │                       │
+│  │                         │  │  • percent change       │                       │
+│  │                         │  │  • category diffs       │                       │
+│  └─────────────────────────┘  └─────────────────────────┘                       │
+│                                                                                  │
+│  ┌─────────────────────────┐  ┌─────────────────────────┐                       │
+│  │ findAnomalies           │  │ suggestCategory         │                       │
+│  ├─────────────────────────┤  ├─────────────────────────┤                       │
+│  │ Params:                 │  │ Params:                 │                       │
+│  │  • period: "YYYY-MM"    │  │  • description: string  │                       │
+│  │                         │  │                         │                       │
+│  │ Returns:                │  │ Returns:                │                       │
+│  │  • anomalies[]          │  │  • category: Category   │                       │
+│  │  • patterns[]           │  │  • confidence: number   │                       │
+│  │  • statistics           │  │                         │                       │
+│  └─────────────────────────┘  └─────────────────────────┘                       │
+│                                                                                  │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow Diagram
+
+```
+┌────────────────────────────────────────────────────────────────────────────────┐
+│                              DATA FLOW                                          │
+│                                                                                 │
+│  ┌─────────────────┐                                                           │
+│  │   User Input    │                                                           │
+│  │  "Analyze..."   │                                                           │
+│  └────────┬────────┘                                                           │
+│           │                                                                     │
+│           ▼                                                                     │
+│  ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐          │
+│  │  AI Chat Panel  │────▶│  useAIAssistant │────▶│  POST /api/ai/  │          │
+│  │   Component     │     │      Hook       │     │     chat        │          │
+│  └─────────────────┘     └─────────────────┘     └────────┬────────┘          │
+│           ▲                                               │                     │
+│           │                                               ▼                     │
+│           │                                      ┌─────────────────┐           │
+│           │                                      │   ReAct Agent   │           │
+│           │                                      │   (lib/ai/)     │           │
+│           │                                      └────────┬────────┘           │
+│           │                                               │                     │
+│           │                         ┌─────────────────────┼─────────────────┐  │
+│           │                         │                     │                 │  │
+│           │                         ▼                     ▼                 │  │
+│           │               ┌─────────────────┐   ┌─────────────────┐        │  │
+│           │               │  Tool Executor  │   │   LLM API Call  │        │  │
+│           │               │   (tools.ts)    │   │   (OpenAI/etc)  │        │  │
+│           │               └────────┬────────┘   └─────────────────┘        │  │
+│           │                        │                                        │  │
+│           │                        ▼                                        │  │
+│           │               ┌─────────────────┐                               │  │
+│           │               │   IndexedDB     │                               │  │
+│           │               │    (Dexie)      │                               │  │
+│           │               │ getExpenseStats │                               │  │
+│           │               │ getFiltered...  │                               │  │
+│           │               └─────────────────┘                               │  │
+│           │                                                                 │  │
+│           │  ┌──────────────────────────────────────────────────────────┐  │  │
+│           │  │                    SSE Stream                             │  │  │
+│           │  │  ┌────┐ ┌────┐ ┌────┐ ┌────┐ ┌────┐                      │  │  │
+│           └──│──│ 📊 │─│ ** │─│Nov│─│emb│─│er │─ ... ──────────────────│──┘  │
+│              │  └────┘ └────┘ └────┘ └────┘ └────┘                      │     │
+│              │              Token-by-token streaming                     │     │
+│              └──────────────────────────────────────────────────────────┘     │
+│                                                                                 │
+└────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Summary
+
+| Aspect | Decision | Rationale |
+|--------|----------|-----------|
+| **Agentic Pattern** | ReAct with Tool Use | Multi-step reasoning with data access |
+| **Integration** | New `lib/ai/` layer + dedicated hooks | Maintains separation of concerns |
+| **State Management** | Zustand (conversation) + React Query (caching) | Consistent with existing patterns |
+| **Error Handling** | Typed errors + exponential retry + graceful degradation | Resilient user experience |
+| **Latency Mitigation** | SSE streaming + optimistic UI + timeouts | Responsive interface |
+| **LLM Integration** | API route proxying external LLM | Security + flexibility to switch providers |
+
 ## Contributing
 
 This is a personal project, but suggestions and feedback are welcome!
