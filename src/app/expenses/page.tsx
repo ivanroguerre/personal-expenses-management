@@ -21,10 +21,10 @@ export default function ExpensesPage() {
         title="Gastos"
         description="Ver y gestionar tus gastos"
       >
-        <Button asChild>
+        <Button asChild size="sm">
           <Link href="/expenses/new">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Agregar Gasto
+            <PlusCircle className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Agregar Gasto</span>
           </Link>
         </Button>
       </Header>
