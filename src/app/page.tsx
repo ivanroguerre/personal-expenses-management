@@ -40,7 +40,7 @@ export default function DashboardPage() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <ExpenseCharts
-                monthlyTotals={stats?.monthlyTotals}
+                dailyTotals={stats?.dailyTotals}
                 categoryTotals={stats?.categoryTotals}
                 isLoading={statsLoading}
               />

@@ -1,11 +1,11 @@
-import { v4 as uuidv4 } from 'uuid';
-import { db } from './index';
+import { v4 as uuidv4 } from "uuid";
+import { db } from "./index";
 import type {
   Expense,
   ExpenseFormData,
   ExpenseFilters,
   ExpenseSort,
-} from '@/types/expense';
+} from "@/types/expense";
 
 export async function getAllExpenses(): Promise<Expense[]> {
   return db.expenses.toArray();
@@ -38,17 +38,25 @@ export async function getFilteredExpenses(
         return false;
       }
 
-      if (filters.minAmount !== undefined && expense.amount < filters.minAmount) {
+      if (
+        filters.minAmount !== undefined &&
+        expense.amount < filters.minAmount
+      ) {
         return false;
       }
 
-      if (filters.maxAmount !== undefined && expense.amount > filters.maxAmount) {
+      if (
+        filters.maxAmount !== undefined &&
+        expense.amount > filters.maxAmount
+      ) {
         return false;
       }
 
       if (
         filters.search &&
-        !expense.description.toLowerCase().includes(filters.search.toLowerCase())
+        !expense.description
+          .toLowerCase()
+          .includes(filters.search.toLowerCase())
       ) {
         return false;
       }
@@ -63,22 +71,21 @@ export async function getFilteredExpenses(
       let comparison = 0;
 
       switch (sort.field) {
-        case 'date':
-          comparison =
-            new Date(a.date).getTime() - new Date(b.date).getTime();
+        case "date":
+          comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
           break;
-        case 'amount':
+        case "amount":
           comparison = a.amount - b.amount;
           break;
-        case 'category':
+        case "category":
           comparison = a.category.localeCompare(b.category);
           break;
-        case 'description':
+        case "description":
           comparison = a.description.localeCompare(b.description);
           break;
       }
 
-      return sort.direction === 'asc' ? comparison : -comparison;
+      return sort.direction === "asc" ? comparison : -comparison;
     });
   } else {
     // Default sort by date descending
@@ -139,7 +146,9 @@ export async function getExpenseStats() {
 
   const thisMonthExpenses = expenses.filter((e) => {
     const date = new Date(e.date);
-    return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    return (
+      date.getMonth() === currentMonth && date.getFullYear() === currentYear
+    );
   });
 
   const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
@@ -147,29 +156,44 @@ export async function getExpenseStats() {
 
   const lastMonthExpenses = expenses.filter((e) => {
     const date = new Date(e.date);
-    return date.getMonth() === lastMonth && date.getFullYear() === lastMonthYear;
+    return (
+      date.getMonth() === lastMonth && date.getFullYear() === lastMonthYear
+    );
   });
 
-  const totalThisMonth = thisMonthExpenses.reduce((sum, e) => sum + e.amount, 0);
-  const totalLastMonth = lastMonthExpenses.reduce((sum, e) => sum + e.amount, 0);
-
-  const categoryTotals = expenses.reduce(
-    (acc, expense) => {
-      acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
-      return acc;
-    },
-    {} as Record<string, number>
+  const totalThisMonth = thisMonthExpenses.reduce(
+    (sum, e) => sum + e.amount,
+    0
+  );
+  const totalLastMonth = lastMonthExpenses.reduce(
+    (sum, e) => sum + e.amount,
+    0
   );
 
-  const monthlyTotals = expenses.reduce(
-    (acc, expense) => {
-      const date = new Date(expense.date);
-      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      acc[key] = (acc[key] || 0) + expense.amount;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const categoryTotals = expenses.reduce((acc, expense) => {
+    acc[expense.category] = (acc[expense.category] || 0) + expense.amount;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const monthlyTotals = expenses.reduce((acc, expense) => {
+    const date = new Date(expense.date);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
+    acc[key] = (acc[key] || 0) + expense.amount;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const dailyTotals = expenses.reduce((acc, expense) => {
+    const date = new Date(expense.date);
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(date.getDate()).padStart(2, "0")}`;
+    acc[key] = (acc[key] || 0) + expense.amount;
+    return acc;
+  }, {} as Record<string, number>);
 
   const todayExpenses = expenses.filter((e) => {
     const expenseDate = new Date(e.date);
@@ -183,7 +207,7 @@ export async function getExpenseStats() {
   // Find the category with the highest total spending
   const topSpendingCategory = Object.entries(categoryTotals).reduce(
     (max, [category, total]) => (total > max.total ? { category, total } : max),
-    { category: '', total: 0 }
+    { category: "", total: 0 }
   );
 
   return {
@@ -198,9 +222,11 @@ export async function getExpenseStats() {
         : 0,
     categoryTotals,
     monthlyTotals,
+    dailyTotals,
     averageTodayExpense:
       todayExpenses.length > 0
-        ? todayExpenses.reduce((sum, e) => sum + e.amount, 0) / todayExpenses.length
+        ? todayExpenses.reduce((sum, e) => sum + e.amount, 0) /
+          todayExpenses.length
         : 0,
   };
 }
@@ -211,4 +237,3 @@ export async function getRecentExpenses(limit: number = 5): Promise<Expense[]> {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, limit);
 }
-

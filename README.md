@@ -49,6 +49,40 @@ This project (at least in its initial phase) was built with AI assistance using 
 
 The AI-assisted development approach enabled rapid prototyping while maintaining best practices, clean architecture, and comprehensive type safety throughout the codebase.
 
+### Iterative Development & Enhancements
+
+After the initial MVP was delivered, the project underwent several iterations to improve user experience and functionality. This demonstrates that AI-assisted development isn't just about the initial build—it's also effective for iterative improvements and feature refinements.
+
+#### Dashboard Chart Evolution
+
+One significant enhancement was the transformation of the expense analytics visualization:
+
+**Initial State (MVP):**
+- Bar chart displaying monthly expense totals
+- Fixed view of the last 6 months
+- Limited interactivity
+
+**Iterative Improvements:**
+1. **Chart Type Change** - Converted from bar chart to line chart for daily expenses
+   - Better suited for displaying more granular time-series data
+   - Shows spending patterns within a month more clearly
+   - Includes data points for visual clarity and interactivity
+
+2. **Month/Year Selection System**
+   - Added dropdown selectors for arbitrary month and year navigation
+   - Implemented smart filtering to show only months/years with available data
+   - Automatic month adjustment when switching years to prevent empty views
+
+3. **Data Completeness** - Enhanced data processing to show all days in a month
+   - Days without expenses display as zero (no gaps in visualization)
+   - Complete calendar view for better spending pattern recognition
+
+4. **Backend Updates** - Extended database analytics to support daily aggregation
+   - Added `dailyTotals` calculation alongside existing `monthlyTotals`
+   - Maintained backward compatibility with existing features
+
+These improvements showcase how the codebase's clean architecture and separation of concerns (data layer, hooks, components) made it easy to implement significant feature changes without requiring major refactoring. The type-safe TypeScript implementation and modular component design enabled confident modifications with minimal risk of introducing bugs.
+
 ## How to Run the Project
 
 ### Development Mode
