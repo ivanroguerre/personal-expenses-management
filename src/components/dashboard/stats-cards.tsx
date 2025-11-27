@@ -56,14 +56,7 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
 
   const cards = [
     {
-      title: 'Total Gastado',
-      value: formatCurrency(stats.totalAmount),
-      description: `${stats.totalExpenses} gastos totales`,
-      icon: DollarSign,
-      iconColor: 'text-emerald-500',
-    },
-    {
-      title: 'Este Mes',
+      title: 'Total gastado este mes',
       value: formatCurrency(stats.totalThisMonth),
       description:
         stats.monthlyChange !== 0
@@ -76,6 +69,13 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
           : stats.monthlyChange < 0
             ? 'text-emerald-500'
             : 'text-muted-foreground',
+    },
+    {
+      title: 'Total Gastado',
+      value: formatCurrency(stats.totalAmount),
+      description: `${stats.totalExpenses} gastos totales`,
+      icon: DollarSign,
+      iconColor: 'text-emerald-500',
     },
     {
       title: 'Mes Anterior',
