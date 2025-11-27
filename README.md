@@ -834,6 +834,63 @@ A responsive design enhancement focused on preventing pie chart overflow and imp
 
 This responsive enhancement demonstrates the importance of mobile-first considerations in data visualization. By leveraging the existing `useIsMobile` hook and implementing conditional sizing and positioning, the pie chart now provides an optimal viewing experience across all device sizes. The strategy of reducing chart dimensions and repositioning the legend from side to bottom on mobile prevents overflow while maintaining data clarity. This pattern showcases how modern React practices with conditional rendering enable elegant responsive solutions without requiring separate components or complex CSS media queries. The enhancement aligns with the application's broader commitment to responsive design, ensuring that analytics remain accessible and useful whether accessed from desktop or mobile devices.
 
+#### Sidebar Language Evolution
+
+A comprehensive localization enhancement focused on adapting the application sidebar navigation to Spanish and ensuring consistency with page header titles across the application:
+
+**Initial State:**
+- All sidebar navigation items displayed in English
+- Navigation labels: "Dashboard", "All Expenses", "Add Expense"
+- Sidebar header branding: "Expense Tracker", "Personal Finance"
+- Navigation section label: "Navigation"
+- Inconsistent with the Spanish-localized page content throughout the rest of the application
+- Mixed language experience between navigation and page content
+
+**Iterative Improvements:**
+1. **Initial Spanish Translation** - Localized all user-facing strings in the sidebar component (`src/components/layout/app-sidebar.tsx`)
+   - Navigation items translated to Spanish:
+     - "Dashboard" changed to "Tablero"
+     - "All Expenses" changed to "Todos los Gastos"
+     - "Add Expense" changed to "Agregar Gasto"
+   - Sidebar header branding updated:
+     - "Expense Tracker" changed to "Gestor de Gastos"
+     - "Personal Finance" changed to "Finanzas Personales"
+   - Navigation section label changed from "Navigation" to "Navegación"
+   - Maintained all existing functionality and navigation behavior
+
+2. **Consistency Alignment with Page Headers** - Refined navigation labels to match actual page titles
+   - Audited all page components to identify exact header titles used
+   - Updated navigation items for perfect consistency:
+     - "Tablero" refined to "Panel de Control" (matching dashboard page header)
+     - "Todos los Gastos" refined to "Gastos" (matching expenses list page header)
+     - "Agregar Gasto" remained unchanged (already matching new expense page header)
+   - Eliminates cognitive disconnect between navigation label and page title
+   - Creates seamless navigation experience with predictable page titles
+
+3. **Active State Management** - Preserved intelligent navigation highlighting
+   - Active link detection logic maintained for visual feedback
+   - Dashboard (`/`) shows active state only for exact root path match
+   - Expenses (`/expenses`) highlights for all expense-related paths including `/expenses/new` and `/expenses/[id]`
+   - Add Expense (`/expenses/new`) properly highlights when creating new expenses
+   - Navigation provides clear visual indication of current location
+
+4. **Component Architecture Preservation** - Translation applied without structural changes
+   - Navigation items array structure unchanged
+   - Icon components (LayoutDashboard, Receipt, PlusCircle, Wallet) maintained
+   - Routing paths unchanged, only display labels modified
+   - Sidebar component props and composition remained identical
+   - No breaking changes to sidebar API or behavior
+   - TypeScript type safety preserved throughout
+
+5. **Complete Spanish Navigation Experience** - Achieved unified language consistency
+   - All sidebar text now in Spanish matching the rest of the application
+   - Sidebar branding reflects Spanish terminology for the application's purpose
+   - Navigation labels precisely mirror the titles users see on each page
+   - Eliminates language switching between navigation and content areas
+   - Professional, cohesive Spanish user experience from navigation through all features
+
+This localization enhancement completes the Spanish language transformation of the application's primary navigation system. By not only translating the sidebar but also ensuring exact alignment with page header titles, the implementation eliminates any potential confusion between what users see in navigation versus what they see on the actual pages. This attention to consistency demonstrates a commitment to user experience quality, where every touchpoint—from the sidebar navigation to page headers—uses identical terminology. The two-step refinement process (initial translation followed by consistency alignment) showcases an iterative approach to localization that prioritizes both linguistic accuracy and cross-component coherence.
+
 ## How to Run the Project
 
 ### Development Mode

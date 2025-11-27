@@ -24,17 +24,17 @@ import {
 
 const navigationItems = [
   {
-    title: 'Dashboard',
+    title: 'Panel de Control',
     href: '/',
     icon: LayoutDashboard,
   },
   {
-    title: 'All Expenses',
+    title: 'Gastos',
     href: '/expenses',
     icon: Receipt,
   },
   {
-    title: 'Add Expense',
+    title: 'Agregar Gasto',
     href: '/expenses/new',
     icon: PlusCircle,
   },
@@ -51,16 +51,16 @@ export function AppSidebar() {
             <Wallet className="h-4 w-4 text-primary-foreground" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold">Expense Tracker</span>
+            <span className="text-sm font-semibold">Gestor de Gastos</span>
             <span className="text-xs text-muted-foreground">
-              Personal Finance
+              Finanzas Personales
             </span>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Navegación</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navigationItems.map((item) => (
