@@ -128,6 +128,44 @@ A key usability improvement focused on enhancing navigation from the dashboard t
 
 This enhancement demonstrates how small UX improvements can significantly reduce friction in user workflows. By providing multiple navigation paths to key features, the application becomes more intuitive and efficient for daily expense management tasks.
 
+#### Expenses List Language Evolution
+
+A comprehensive internationalization improvement focused on adapting the expenses list interface for Spanish-speaking users:
+
+**Initial State (MVP):**
+- All user-facing text in English
+- Page title: "Expenses"
+- Table headers: "Date", "Description", "Category", "Amount"
+- Filter placeholder: "Search expenses..."
+- Category selector: "All categories"
+- Action buttons in English
+
+**Iterative Improvements:**
+1. **Expenses Page Translation** - Localized the main expenses list page (`src/app/expenses/page.tsx`)
+   - Title changed from "Expenses" to "Gastos"
+   - Description updated to "Ver y gestionar tus gastos" (View and manage your expenses)
+   - Add button text changed from "Add Expense" to "Agregar Gasto"
+   - Error message translated to "Error al cargar los gastos. Por favor, intenta de nuevo."
+
+2. **Filters Component Translation** - Adapted all filtering UI elements (`src/components/expenses/filters.tsx`)
+   - Search placeholder updated from "Search expenses..." to "Buscar gastos..."
+   - Category selector placeholder changed to "Todas las categorías"
+   - "All Categories" option translated to "Todas las Categorías"
+   - Clear button text changed from "Clear filters" to "Limpiar filtros"
+
+3. **Table Component Translation** - Localized the expenses table interface (`src/components/expenses/expenses-table.tsx`)
+   - Column headers translated: "Fecha", "Descripción", "Categoría", "Monto"
+   - Empty state message updated to "No se encontraron gastos"
+   - Helper text changed to "Agrega tu primer gasto para comenzar"
+   - Maintained consistent translations across loading and interactive states
+
+4. **Code Quality Preservation** - Ensured maintainability during translation
+   - All code, comments, and variable names remained in English
+   - Type safety and functionality preserved throughout the changes
+   - No breaking changes to the underlying logic or component contracts
+
+This localization demonstrates the application's flexibility and commitment to accessibility for Spanish-speaking users. The systematic approach to translation—covering page headers, form inputs, table headers, and user feedback messages—ensures a consistent and natural experience throughout the expenses management workflow. The clean separation between presentation and logic allowed for straightforward internationalization without requiring architectural changes.
+
 ## How to Run the Project
 
 ### Development Mode

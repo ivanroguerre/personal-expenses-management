@@ -18,13 +18,13 @@ export default function ExpensesPage() {
   return (
     <>
       <Header
-        title="Expenses"
-        description="View and manage your expenses"
+        title="Gastos"
+        description="Ver y gestionar tus gastos"
       >
         <Button asChild>
           <Link href="/expenses/new">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Add Expense
+            Agregar Gasto
           </Link>
         </Button>
       </Header>
@@ -34,7 +34,7 @@ export default function ExpensesPage() {
         {error ? (
           <div className="rounded-md border border-destructive bg-destructive/10 p-4">
             <p className="text-sm text-destructive">
-              Failed to load expenses. Please try again.
+              Error al cargar los gastos. Por favor, intenta de nuevo.
             </p>
           </div>
         ) : (

@@ -64,10 +64,10 @@ export function ExpensesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
+              <TableHead>Fecha</TableHead>
+              <TableHead>Descripción</TableHead>
+              <TableHead>Categoría</TableHead>
+              <TableHead className="text-right">Monto</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -101,9 +101,9 @@ export function ExpensesTable({
     return (
       <div className="rounded-md border">
         <div className="flex flex-col items-center justify-center py-12">
-          <p className="text-lg font-medium">No expenses found</p>
+          <p className="text-lg font-medium">No se encontraron gastos</p>
           <p className="text-sm text-muted-foreground mt-1">
-            Add your first expense to get started
+            Agrega tu primer gasto para comenzar
           </p>
         </div>
       </div>
@@ -117,22 +117,22 @@ export function ExpensesTable({
           <TableRow>
             <TableHead>
               <SortButton field="date" sort={sort} onSort={setSort}>
-                Date
+                Fecha
               </SortButton>
             </TableHead>
             <TableHead>
               <SortButton field="description" sort={sort} onSort={setSort}>
-                Description
+                Descripción
               </SortButton>
             </TableHead>
             <TableHead>
               <SortButton field="category" sort={sort} onSort={setSort}>
-                Category
+                Categoría
               </SortButton>
             </TableHead>
             <TableHead className="text-right">
               <SortButton field="amount" sort={sort} onSort={setSort}>
-                Amount
+                Monto
               </SortButton>
             </TableHead>
             <TableHead className="w-[50px]"></TableHead>

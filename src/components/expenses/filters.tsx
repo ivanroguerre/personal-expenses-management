@@ -23,7 +23,7 @@ export function ExpenseFilters() {
       <div className="relative flex-1 min-w-[200px] max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search expenses..."
+          placeholder="Buscar gastos..."
           value={filters.search || ''}
           onChange={(e) => setFilters({ search: e.target.value || undefined })}
           className="pl-9"
@@ -39,10 +39,10 @@ export function ExpenseFilters() {
         }
       >
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="All categories" />
+          <SelectValue placeholder="Todas las categorías" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Categories</SelectItem>
+          <SelectItem value="all">Todas las Categorías</SelectItem>
           {EXPENSE_CATEGORIES.map((category) => (
             <SelectItem key={category} value={category}>
               {CATEGORY_LABELS[category]}
@@ -54,7 +54,7 @@ export function ExpenseFilters() {
       {hasFilters && (
         <Button variant="ghost" size="sm" onClick={resetFilters}>
           <X className="mr-2 h-4 w-4" />
-          Clear filters
+          Limpiar filtros
         </Button>
       )}
     </div>
