@@ -11,17 +11,17 @@ interface HeaderProps {
 
 export function Header({ title, description, children }: HeaderProps) {
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+    <header className="flex min-h-16 shrink-0 items-center gap-2 border-b px-4 py-3">
       <SidebarTrigger className="-ml-1" />
       <Separator orientation="vertical" className="mr-2 h-4" />
-      <div className="flex flex-1 items-center justify-between">
+      <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-lg font-semibold">{title}</h1>
           {description && (
             <p className="text-sm text-muted-foreground">{description}</p>
           )}
         </div>
-        {children && <div className="flex items-center gap-2">{children}</div>}
+        {children && <div className="flex items-center gap-2 flex-wrap">{children}</div>}
       </div>
     </header>
   );

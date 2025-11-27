@@ -257,6 +257,51 @@ A key usability improvement focused on enhancing navigation from the dashboard t
 
 This enhancement demonstrates how small UX improvements can significantly reduce friction in user workflows. By providing multiple navigation paths to key features, the application becomes more intuitive and efficient for daily expense management tasks.
 
+#### Dashboard Link Buttons Evolution
+
+A mobile responsiveness enhancement focused on preventing button overflow and improving the dashboard header layout on small screens:
+
+**Initial State:**
+- Two action buttons ("Ver Gastos" and "Agregar Gasto") displayed side by side in the header
+- Fixed horizontal layout using `h-16` height with `justify-between` flex alignment
+- Full-width buttons with icon and text on all screen sizes
+- On mobile devices, both buttons with full text would overflow in the same row
+- Header content couldn't adapt to smaller viewports, causing layout issues
+- No responsive design considerations for button sizing or layout
+
+**Iterative Improvements:**
+1. **Responsive Header Layout** - Made the header container adapt to screen size (`src/components/layout/header.tsx`)
+   - Changed from fixed `h-16` to `min-h-16` with `py-3` to allow vertical growth
+   - Implemented responsive flex direction: `flex-col` on mobile, `sm:flex-row` on desktop
+   - Content stacks vertically on mobile (title/description over buttons)
+   - Content displays horizontally on desktop (title left, buttons right)
+   - Added `flex-wrap` to buttons container for additional overflow protection
+   - Maintained existing `gap` spacing for visual consistency
+
+2. **Adaptive Button Sizing** - Implemented size variants for better mobile experience (`src/app/page.tsx`)
+   - Added `size="sm"` to both buttons for more compact appearance
+   - Reduced overall button footprint without sacrificing touch target size
+   - Maintains Shadcn button component accessibility standards
+   - Consistent sizing across both primary and outline button variants
+
+3. **Icon-Only Mobile Display** - Created responsive button content visibility
+   - Button text hidden on mobile using `hidden sm:inline` classes
+   - Icons displayed standalone on mobile for maximum space efficiency
+   - Full button text shown on screens `sm` (640px) and above
+   - Icon margins adjusted conditionally: no margin on mobile, `sm:mr-2` on desktop
+   - "Ver Gastos" (List icon) and "Agregar Gasto" (PlusCircle icon) remain recognizable without text
+   - Maintains semantic clarity through icon choice
+
+4. **Improved Mobile Experience** - Enhanced usability across all device sizes
+   - No overflow or horizontal scrolling on small screens
+   - Buttons remain fully accessible with appropriate touch targets
+   - Header height adjusts naturally when content wraps
+   - Desktop users still see full button labels for maximum clarity
+   - Graceful degradation pattern ensures functionality at all breakpoints
+   - Maintains visual hierarchy between primary and secondary actions
+
+This responsive enhancement demonstrates the importance of mobile-first design considerations in modern web applications. By implementing a progressive enhancement strategy—starting with icon-only buttons on mobile and expanding to full labels on larger screens—the interface remains functional and visually clean across all device sizes. The flexible header layout that switches between vertical and horizontal orientations prevents content overflow while maintaining an intuitive visual hierarchy. This pattern showcases how Tailwind's responsive utilities enable elegant solutions to common layout challenges without requiring custom media queries or complex CSS.
+
 #### Expenses List Language Evolution
 
 A comprehensive internationalization improvement focused on adapting the expenses list interface for Spanish-speaking users:
