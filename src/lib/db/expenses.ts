@@ -180,9 +180,15 @@ export async function getExpenseStats() {
     );
   });
 
+  // Find the category with the highest total spending
+  const topSpendingCategory = Object.entries(categoryTotals).reduce(
+    (max, [category, total]) => (total > max.total ? { category, total } : max),
+    { category: '', total: 0 }
+  );
+
   return {
     totalExpenses: expenses.length,
-    totalAmount: expenses.reduce((sum, e) => sum + e.amount, 0),
+    topSpendingCategory: topSpendingCategory.category || null,
     totalThisMonth,
     totalLastMonth,
     monthlyChange:

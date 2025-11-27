@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
 import {
-  DollarSign,
   TrendingUp,
   TrendingDown,
   Receipt,
   Calculator,
-} from 'lucide-react';
+  PieChart,
+} from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { CURRENCY } from '@/lib/constants';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CURRENCY } from "@/lib/constants";
 
 interface StatsCardsProps {
   stats?: {
     totalExpenses: number;
-    totalAmount: number;
+    topSpendingCategory: string | null;
     totalThisMonth: number;
     totalLastMonth: number;
     monthlyChange: number;
@@ -56,40 +56,44 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
 
   const cards = [
     {
-      title: 'Total gastado este mes',
+      title: "Total gastado este mes",
       value: formatCurrency(stats.totalThisMonth),
       description:
         stats.monthlyChange !== 0
-          ? `${stats.monthlyChange > 0 ? '+' : ''}${stats.monthlyChange.toFixed(1)}% desde el mes pasado`
-          : 'Sin cambios desde el mes pasado',
+          ? `${stats.monthlyChange > 0 ? "+" : ""}${stats.monthlyChange.toFixed(
+              1
+            )}% desde el mes pasado`
+          : "Sin cambios desde el mes pasado",
       icon: stats.monthlyChange >= 0 ? TrendingUp : TrendingDown,
       iconColor:
         stats.monthlyChange > 0
-          ? 'text-red-500'
+          ? "text-red-500"
           : stats.monthlyChange < 0
-            ? 'text-emerald-500'
-            : 'text-muted-foreground',
+          ? "text-emerald-500"
+          : "text-muted-foreground",
     },
     {
-      title: 'Promedio diario de gastos',
+      title: "Promedio diario de gastos",
       value: formatCurrency(stats.averageTodayExpense),
-      description: 'Por gasto diario',
+      description: "Por gasto diario",
       icon: Calculator,
-      iconColor: 'text-purple-500',
+      iconColor: "text-purple-500",
     },
     {
-      title: 'Total Gastado',
-      value: formatCurrency(stats.totalAmount),
-      description: `${stats.totalExpenses} gastos totales`,
-      icon: DollarSign,
-      iconColor: 'text-emerald-500',
+      title: "Categoría con mayor gasto",
+      value: stats.topSpendingCategory || "N/A",
+      description: stats.topSpendingCategory
+        ? `De toda la historia de gastos`
+        : "No hay gastos aún",
+      icon: PieChart,
+      iconColor: "text-emerald-500",
     },
     {
-      title: 'Mes Anterior',
+      title: "Mes Anterior",
       value: formatCurrency(stats.totalLastMonth),
-      description: 'Total del mes anterior',
+      description: "Total del mes anterior",
       icon: Receipt,
-      iconColor: 'text-blue-500',
+      iconColor: "text-blue-500",
     },
   ];
 
@@ -112,4 +116,3 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
     </div>
   );
 }
-
