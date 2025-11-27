@@ -203,6 +203,44 @@ A powerful filtering enhancement focused on enabling users to filter expenses by
 
 This enhancement demonstrates the benefits of forward-thinking architecture. The `ExpenseFilters` type was designed with `startDate` and `endDate` fields from the beginning, and the database layer already implemented the filtering logic, making it trivial to add the UI component. The modular component design and separation of concerns allowed this significant feature addition with changes only to the filters component, showcasing how well-architected applications can evolve gracefully without requiring extensive refactoring.
 
+#### Expenses List Date Range Language Evolution
+
+A localization refinement focused on adapting the calendar date picker interface to properly display in Spanish:
+
+**Initial State:**
+- Date range picker displayed in default English locale
+- Month names shown in English (January, February, etc.)
+- Weekday abbreviations in English (Mo, Tu, We, etc.)
+- Inconsistent with the rest of the Spanish-localized interface
+- Generic date formatting without locale-specific conventions
+
+**Iterative Improvements:**
+1. **Spanish Locale Integration** - Added `date-fns` Spanish locale throughout the component
+   - Imported `es` locale from `date-fns/locale`
+   - Passed locale to the Calendar component via the `locale` prop
+   - Updated all `format()` function calls to include `{ locale: es }` parameter
+   - Calendar now displays in Spanish by default
+
+2. **Custom Formatters for Proper Capitalization** - Implemented formatters to match Spanish conventions
+   - Added `formatWeekdayName` formatter to capitalize weekday abbreviations (Lu, Ma, Mi, etc.)
+   - Added `formatMonthCaption` formatter to capitalize month names (Enero 2025, Febrero 2025, etc.)
+   - Spanish locale provides lowercase strings by default; formatters ensure proper title case
+   - Maintains consistent capitalization with other UI elements throughout the application
+
+3. **Date Display Consistency** - Ensured formatted dates match the calendar locale
+   - Button trigger showing selected date range now uses Spanish locale
+   - Date format (dd/MM/yyyy) remains the same but respects locale-specific rendering
+   - Seamless integration between calendar selection and displayed date range
+   - All date-related text now consistently in Spanish across the filtering interface
+
+4. **React Day Picker Integration** - Leveraged built-in locale support from underlying library
+   - `react-day-picker` natively supports `date-fns` locales
+   - No modifications needed to the base Calendar component
+   - Locale prop passed through component hierarchy cleanly
+   - Maintains all existing calendar functionality while switching languages
+
+This localization improvement completes the Spanish language experience for the expenses filtering system, ensuring that all user-facing elements—including the sophisticated date range picker—are consistently presented in Spanish. The use of custom formatters demonstrates attention to linguistic detail, as Spanish capitalization conventions differ from English in calendar contexts. This enhancement showcases how modern date libraries like `date-fns` and `react-day-picker` make internationalization straightforward when properly integrated.
+
 ## How to Run the Project
 
 ### Development Mode

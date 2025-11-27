@@ -1,38 +1,41 @@
-'use client';
+"use client";
 
-import { Search, X, Calendar as CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
-import { DateRange } from 'react-day-picker';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Search, X, Calendar as CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { DateRange } from "react-day-picker";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import { useUIStore } from '@/stores/ui-store';
-import { EXPENSE_CATEGORIES, CATEGORY_LABELS } from '@/types/expense';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { useUIStore } from "@/stores/ui-store";
+import { EXPENSE_CATEGORIES, CATEGORY_LABELS } from "@/types/expense";
+import { cn } from "@/lib/utils";
 
 export function ExpenseFilters() {
   const { filters, setFilters, resetFilters } = useUIStore();
 
-  const hasFilters = filters.category || filters.search || filters.startDate || filters.endDate;
+  const hasFilters =
+    filters.category || filters.search || filters.startDate || filters.endDate;
 
-  const dateRange: DateRange | undefined = filters.startDate || filters.endDate
-    ? {
-        from: filters.startDate,
-        to: filters.endDate,
-      }
-    : undefined;
+  const dateRange: DateRange | undefined =
+    filters.startDate || filters.endDate
+      ? {
+          from: filters.startDate,
+          to: filters.endDate,
+        }
+      : undefined;
 
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setFilters({
@@ -47,7 +50,7 @@ export function ExpenseFilters() {
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Buscar gastos..."
-          value={filters.search || ''}
+          value={filters.search || ""}
           onChange={(e) => setFilters({ search: e.target.value || undefined })}
           className="pl-9"
         />
@@ -58,18 +61,19 @@ export function ExpenseFilters() {
           <Button
             variant="outline"
             className={cn(
-              'w-[280px] justify-start text-left font-normal',
-              !dateRange && 'text-muted-foreground'
+              "w-[280px] justify-start text-left font-normal",
+              !dateRange && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {dateRange?.from ? (
               dateRange.to ? (
                 <>
-                  {format(dateRange.from, 'dd/MM/yyyy')} - {format(dateRange.to, 'dd/MM/yyyy')}
+                  {format(dateRange.from, "dd/MM/yyyy", { locale: es })} -{" "}
+                  {format(dateRange.to, "dd/MM/yyyy", { locale: es })}
                 </>
               ) : (
-                format(dateRange.from, 'dd/MM/yyyy')
+                format(dateRange.from, "dd/MM/yyyy", { locale: es })
               )
             ) : (
               <span>Seleccionar fechas</span>
@@ -83,16 +87,28 @@ export function ExpenseFilters() {
             selected={dateRange}
             onSelect={handleDateRangeChange}
             numberOfMonths={2}
-            initialFocus
+            autoFocus
+            locale={es}
+            formatters={{
+              formatWeekdayName: (date) => {
+                const name = format(date, "EEEEEE", { locale: es });
+                return name.charAt(0).toUpperCase() + name.slice(1);
+              },
+              formatMonthCaption: (date) => {
+                const monthYear = format(date, "LLLL yyyy", { locale: es });
+                return monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+              },
+            }}
           />
         </PopoverContent>
       </Popover>
 
       <Select
-        value={filters.category || 'all'}
+        value={filters.category || "all"}
         onValueChange={(value) =>
           setFilters({
-            category: value === 'all' ? undefined : (value as typeof filters.category),
+            category:
+              value === "all" ? undefined : (value as typeof filters.category),
           })
         }
       >
@@ -118,4 +134,3 @@ export function ExpenseFilters() {
     </div>
   );
 }
-
