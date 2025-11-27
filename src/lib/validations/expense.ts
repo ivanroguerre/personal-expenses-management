@@ -3,18 +3,18 @@ import { EXPENSE_CATEGORIES } from '@/types/expense';
 
 export const expenseFormSchema = z.object({
   amount: z
-    .number({ message: 'Amount is required' })
-    .positive('Amount must be positive')
-    .max(1000000, 'Amount cannot exceed 1,000,000'),
+    .number({ message: 'El monto es requerido' })
+    .positive('El monto debe ser positivo')
+    .max(1000000, 'El monto no puede exceder 1,000,000'),
   description: z
     .string()
-    .min(1, 'Description is required')
-    .max(200, 'Description cannot exceed 200 characters'),
+    .min(1, 'La descripción es requerida')
+    .max(200, 'La descripción no puede exceder 200 caracteres'),
   category: z.enum(EXPENSE_CATEGORIES, {
-    message: 'Please select a category',
+    message: 'Por favor selecciona una categoría',
   }),
   date: z.date({
-    message: 'Date is required',
+    message: 'La fecha es requerida',
   }),
 });
 

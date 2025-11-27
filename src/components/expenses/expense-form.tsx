@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -75,7 +76,7 @@ export function ExpenseForm({
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount ($)</FormLabel>
+              <FormLabel>Monto ($)</FormLabel>
               <FormControl>
                 <Input
                   type="number"
@@ -100,10 +101,10 @@ export function ExpenseForm({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Descripción</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="What was this expense for?"
+                  placeholder="¿Para qué fue este gasto?"
                   {...field}
                 />
               </FormControl>
@@ -117,11 +118,11 @@ export function ExpenseForm({
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>Categoría</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a category" />
+                    <SelectValue placeholder="Selecciona una categoría" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -142,7 +143,7 @@ export function ExpenseForm({
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date</FormLabel>
+              <FormLabel>Fecha</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -154,9 +155,9 @@ export function ExpenseForm({
                       )}
                     >
                       {field.value ? (
-                        format(field.value, 'PPP')
+                        format(field.value, 'PPP', { locale: es })
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Elige una fecha</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -170,7 +171,18 @@ export function ExpenseForm({
                     disabled={(date) =>
                       date > new Date() || date < new Date('1900-01-01')
                     }
-                    initialFocus
+                    autoFocus
+                    locale={es}
+                    formatters={{
+                      formatWeekdayName: (date) => {
+                        const name = format(date, "EEEEEE", { locale: es });
+                        return name.charAt(0).toUpperCase() + name.slice(1);
+                      },
+                      formatMonthCaption: (date) => {
+                        const monthYear = format(date, "LLLL yyyy", { locale: es });
+                        return monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
+                      },
+                    }}
                   />
                 </PopoverContent>
               </Popover>
@@ -182,7 +194,7 @@ export function ExpenseForm({
         <div className="flex gap-4 pt-4">
           <Button type="submit" disabled={isSubmitting} className="flex-1">
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {expense ? 'Update Expense' : 'Add Expense'}
+            {expense ? 'Actualizar Gasto' : 'Agregar Gasto'}
           </Button>
         </div>
       </form>

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Header } from '@/components/layout/header';
-import { ExpenseForm } from '@/components/expenses/expense-form';
-import { useCreateExpense } from '@/hooks/use-expense-mutations';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { ExpenseFormValues } from '@/lib/validations/expense';
+import { Header } from "@/components/layout/header";
+import { ExpenseForm } from "@/components/expenses/expense-form";
+import { useCreateExpense } from "@/hooks/use-expense-mutations";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ExpenseFormValues } from "@/lib/validations/expense";
 
 export default function NewExpensePage() {
   const createExpense = useCreateExpense();
@@ -15,15 +15,12 @@ export default function NewExpensePage() {
 
   return (
     <>
-      <Header
-        title="Add Expense"
-        description="Record a new expense"
-      />
+      <Header title="Agregar Gasto" description="Registrar un nuevo gasto" />
       <main className="flex-1 p-6">
         <div className="mx-auto max-w-2xl">
           <Card>
             <CardHeader>
-              <CardTitle>New Expense</CardTitle>
+              <CardTitle>Nuevo Gasto</CardTitle>
             </CardHeader>
             <CardContent>
               <ExpenseForm
@@ -37,4 +34,3 @@ export default function NewExpensePage() {
     </>
   );
 }
-

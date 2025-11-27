@@ -404,6 +404,76 @@ A smart filtering enhancement focused on providing a more relevant default view 
 
 This enhancement demonstrates thoughtful UX design for temporal data. By defaulting to the current year, the application provides a more focused and relevant view for most users' primary use case—managing current expenses. The implementation is clean and efficient, calculating the date range once at module initialization rather than on every render. This approach respects the existing filter architecture while improving the out-of-box experience, especially valuable for users with extensive expense history spanning multiple years. The automatic year boundary detection ensures the filter stays relevant as time progresses, requiring no manual updates when the calendar year changes.
 
+#### Add/Edit Expenses Language Evolution
+
+A comprehensive internationalization enhancement focused on adapting the expense creation and editing interfaces for Spanish-speaking users:
+
+**Initial State:**
+- New expense page displayed entirely in English
+- Edit expense page and error messages in English
+- Form labels, placeholders, and buttons in English
+- Validation error messages in English
+- Calendar component using default English locale
+- Inconsistent with the Spanish-localized expenses list interface
+
+**Iterative Improvements:**
+1. **New Expense Page Translation** - Localized the add expense page interface (`src/app/expenses/new/page.tsx`)
+   - Page title changed from "Add Expense" to "Agregar Gasto"
+   - Page description updated from "Record a new expense" to "Registrar un nuevo gasto"
+   - Card title changed from "New Expense" to "Nuevo Gasto"
+   - Maintained clean component structure with no logic changes
+   - Consistent Spanish terminology across all visible text elements
+
+2. **Expense Form Component Translation** - Adapted all form inputs and labels (`src/components/expenses/expense-form.tsx`)
+   - Amount field label changed from "Amount ($)" to "Monto ($)"
+   - Description field label changed from "Description" to "Descripción"
+   - Description placeholder updated from "What was this expense for?" to "¿Para qué fue este gasto?"
+   - Category label changed from "Category" to "Categoría"
+   - Category placeholder changed from "Select a category" to "Selecciona una categoría"
+   - Date field label changed from "Date" to "Fecha"
+   - Date picker placeholder updated from "Pick a date" to "Elige una fecha"
+   - Submit button text changed from "Add Expense"/"Update Expense" to "Agregar Gasto"/"Actualizar Gasto"
+   - Spanish locale integration for calendar date formatting
+
+3. **Calendar Localization** - Configured date picker to display in Spanish with proper formatting
+   - Imported Spanish locale (`es`) from `date-fns/locale`
+   - Applied locale to date formatting in both display and calendar components
+   - Added custom formatters for proper Spanish capitalization conventions:
+     - Weekday names formatted with capital first letter (Lu, Ma, Mi, Ju, Vi, Sa, Do)
+     - Month captions formatted with capital first letter (Enero 2025, Febrero 2025, etc.)
+   - Calendar now displays month and day names in Spanish by default
+   - Date display format uses Spanish locale for consistency with selected dates
+   - Seamless integration with `react-day-picker` locale support
+
+4. **Validation Schema Translation** - Localized all form validation error messages (`src/lib/validations/expense.ts`)
+   - Amount required message: "Amount is required" → "El monto es requerido"
+   - Amount positive validation: "Amount must be positive" → "El monto debe ser positivo"
+   - Amount max validation: "Amount cannot exceed 1,000,000" → "El monto no puede exceder 1,000,000"
+   - Description required: "Description is required" → "La descripción es requerida"
+   - Description max length: "Description cannot exceed 200 characters" → "La descripción no puede exceder 200 caracteres"
+   - Category required: "Please select a category" → "Por favor selecciona una categoría"
+   - Date required: "Date is required" → "La fecha es requerida"
+   - Users now receive validation feedback in Spanish, improving clarity and usability
+
+5. **Edit Expense Page Translation** - Localized the edit expense interface (`src/app/expenses/[id]/page.tsx`)
+   - Page title changed from "Edit Expense" to "Editar Gasto"
+   - Page description updated from "Modify expense details" to "Modificar detalles del gasto"
+   - Card title changed from "Edit Expense" to "Editar Gasto"
+   - Error state message updated from "Expense not found" to "Gasto no encontrado"
+   - Error description changed from "The expense you're looking for doesn't exist or has been deleted." to "El gasto que buscas no existe o ha sido eliminado."
+   - Back button text updated from "Back to Expenses" to "Volver a Gastos"
+   - Complete Spanish experience across all page states (loading, error, and success)
+
+6. **Code Quality Preservation** - Maintained development best practices during localization
+   - All code, variable names, function names, and comments remained in English
+   - TypeScript types and interfaces preserved without modifications
+   - No changes to component logic, props, or data flow
+   - Form validation logic remained unchanged, only messages translated
+   - Component architecture and file organization unaffected
+   - Zero breaking changes to component APIs or state management
+
+This comprehensive localization completes the Spanish language transformation of the expense management workflow, covering both creation and editing interfaces. Users can now add, view, edit, and delete expenses entirely in Spanish, from page titles and form labels to validation messages and calendar interfaces. The systematic approach ensures linguistic consistency across all user touchpoints while maintaining code quality and architectural integrity. The integration of Spanish locale for date formatting demonstrates attention to cultural conventions, as date presentation differs between languages. This enhancement showcases the application's commitment to accessibility and user experience for Spanish-speaking audiences, providing a fully native language experience without compromising the technical foundation.
+
 ## How to Run the Project
 
 ### Development Mode

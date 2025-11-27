@@ -29,7 +29,7 @@ export default function EditExpensePage({ params }: EditExpensePageProps) {
   if (isLoading) {
     return (
       <>
-        <Header title="Edit Expense" description="Modify expense details" />
+        <Header title="Editar Gasto" description="Modificar detalles del gasto" />
         <main className="flex-1 p-6">
           <div className="mx-auto max-w-2xl">
             <Card>
@@ -52,21 +52,21 @@ export default function EditExpensePage({ params }: EditExpensePageProps) {
   if (error || !expense) {
     return (
       <>
-        <Header title="Edit Expense" />
+        <Header title="Editar Gasto" />
         <main className="flex-1 p-6">
           <div className="mx-auto max-w-2xl">
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <p className="text-lg font-medium text-destructive">
-                  Expense not found
+                  Gasto no encontrado
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  The expense you&apos;re looking for doesn&apos;t exist or has been deleted.
+                  El gasto que buscas no existe o ha sido eliminado.
                 </p>
                 <Button asChild className="mt-4">
                   <Link href="/expenses">
                     <ArrowLeft className="mr-2 h-4 w-4" />
-                    Back to Expenses
+                    Volver a Gastos
                   </Link>
                 </Button>
               </CardContent>
@@ -80,14 +80,14 @@ export default function EditExpensePage({ params }: EditExpensePageProps) {
   return (
     <>
       <Header
-        title="Edit Expense"
-        description="Modify expense details"
+        title="Editar Gasto"
+        description="Modificar detalles del gasto"
       />
       <main className="flex-1 p-6">
         <div className="mx-auto max-w-2xl">
           <Card>
             <CardHeader>
-              <CardTitle>Edit Expense</CardTitle>
+              <CardTitle>Editar Gasto</CardTitle>
             </CardHeader>
             <CardContent>
               <ExpenseForm
