@@ -13,6 +13,12 @@ A modern, offline-first web application for personal expense management with ful
 - ⚡ **Fast Performance** - Optimistic updates and intelligent caching
 - 🔒 **Type-Safe** - Full TypeScript implementation with Zod validation
 
+## 🌐 Live Demo
+
+The application is deployed and accessible at: **[personal-expenses-management.vercel.app/](https://personal-expenses-management.vercel.app/)**
+
+Try it out to see all features in action without any setup required!
+
 ## About This Project
 
 This project (at least in its initial phase) was built with AI assistance using **Claude Opus 4.5**. The following prompt was used to architect and implement the core functionality:
