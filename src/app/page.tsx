@@ -38,21 +38,19 @@ export default function DashboardPage() {
           <>
             <StatsCards stats={stats} isLoading={statsLoading} />
 
-            <ExpenseCharts
-              monthlyTotals={stats?.monthlyTotals}
-              categoryTotals={stats?.categoryTotals}
-              isLoading={statsLoading}
-            />
-
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="md:col-span-2">
-                {/* Future: Add more dashboard widgets here */}
-              </div>
+            <div className="grid gap-6 md:grid-cols-2">
+              <ExpenseCharts
+                monthlyTotals={stats?.monthlyTotals}
+                categoryTotals={stats?.categoryTotals}
+                isLoading={statsLoading}
+              />
               <RecentExpenses
                 expenses={recentExpenses}
                 isLoading={recentLoading}
               />
             </div>
+
+            {/* Future: Add more dashboard widgets here */}
           </>
         )}
       </main>
