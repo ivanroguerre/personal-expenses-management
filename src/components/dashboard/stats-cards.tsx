@@ -19,7 +19,7 @@ interface StatsCardsProps {
     totalThisMonth: number;
     totalLastMonth: number;
     monthlyChange: number;
-    averageExpense: number;
+    averageTodayExpense: number;
   };
   isLoading?: boolean;
 }
@@ -71,6 +71,13 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
             : 'text-muted-foreground',
     },
     {
+      title: 'Promedio diario de gastos',
+      value: formatCurrency(stats.averageTodayExpense),
+      description: 'Por gasto diario',
+      icon: Calculator,
+      iconColor: 'text-purple-500',
+    },
+    {
       title: 'Total Gastado',
       value: formatCurrency(stats.totalAmount),
       description: `${stats.totalExpenses} gastos totales`,
@@ -83,13 +90,6 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
       description: 'Total del mes anterior',
       icon: Receipt,
       iconColor: 'text-blue-500',
-    },
-    {
-      title: 'Promedio',
-      value: formatCurrency(stats.averageExpense),
-      description: 'Por gasto',
-      icon: Calculator,
-      iconColor: 'text-purple-500',
     },
   ];
 

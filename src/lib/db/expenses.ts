@@ -171,6 +171,15 @@ export async function getExpenseStats() {
     {} as Record<string, number>
   );
 
+  const todayExpenses = expenses.filter((e) => {
+    const expenseDate = new Date(e.date);
+    return (
+      expenseDate.getDate() === now.getDate() &&
+      expenseDate.getMonth() === now.getMonth() &&
+      expenseDate.getFullYear() === now.getFullYear()
+    );
+  });
+
   return {
     totalExpenses: expenses.length,
     totalAmount: expenses.reduce((sum, e) => sum + e.amount, 0),
@@ -182,9 +191,9 @@ export async function getExpenseStats() {
         : 0,
     categoryTotals,
     monthlyTotals,
-    averageExpense:
-      expenses.length > 0
-        ? expenses.reduce((sum, e) => sum + e.amount, 0) / expenses.length
+    averageTodayExpense:
+      todayExpenses.length > 0
+        ? todayExpenses.reduce((sum, e) => sum + e.amount, 0) / todayExpenses.length
         : 0,
   };
 }
