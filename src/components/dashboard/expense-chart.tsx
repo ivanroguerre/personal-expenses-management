@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -18,6 +18,13 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   CATEGORY_LABELS,
   CATEGORY_COLORS,
   type ExpenseCategory,
@@ -30,11 +37,15 @@ interface ExpenseChartProps {
   isLoading?: boolean;
 }
 
+type ChartType = 'monthly' | 'category';
+
 export function ExpenseCharts({
   monthlyTotals,
   categoryTotals,
   isLoading,
 }: ExpenseChartProps) {
+  const [selectedChart, setSelectedChart] = useState<ChartType>('monthly');
+
   const monthlyData = useMemo(() => {
     if (!monthlyTotals) return [];
 
@@ -70,24 +81,14 @@ export function ExpenseCharts({
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-5 w-40" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-[300px] w-full" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-5 w-40" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-[300px] w-full" />
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-40" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[300px] w-full" />
+        </CardContent>
+      </Card>
     );
   }
 
@@ -97,14 +98,25 @@ export function ExpenseCharts({
       maximumFractionDigits: 2,
     })}`;
 
+  const chartTitle = selectedChart === 'monthly' ? 'Gasto Mensual' : 'Gastos por Categoría';
+
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Gasto Mensual</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {monthlyData.length > 0 ? (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardTitle className="text-base">{chartTitle}</CardTitle>
+        <Select value={selectedChart} onValueChange={(value) => setSelectedChart(value as ChartType)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Seleccionar gráfico" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="monthly">Gasto Mensual</SelectItem>
+            <SelectItem value="category">Por Categoría</SelectItem>
+          </SelectContent>
+        </Select>
+      </CardHeader>
+      <CardContent>
+        {selectedChart === 'monthly' ? (
+          monthlyData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -139,16 +151,9 @@ export function ExpenseCharts({
             <div className="h-[300px] flex items-center justify-center text-muted-foreground">
               No hay datos para mostrar
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Gastos por Categoría</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {categoryData.length > 0 ? (
+          )
+        ) : (
+          categoryData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -184,10 +189,10 @@ export function ExpenseCharts({
             <div className="h-[300px] flex items-center justify-center text-muted-foreground">
               No hay datos para mostrar
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          )
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
