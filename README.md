@@ -362,6 +362,48 @@ A scalability-focused enhancement to handle large datasets efficiently by implem
 
 This pagination implementation demonstrates the application's readiness to scale with growing datasets. Rather than implementing the full-featured Shadcn DataTable component, this lightweight custom solution leverages the existing table structure and adds only the essential pagination features needed. The clean integration with the UI store and automatic page reset behavior create an intuitive experience where users don't have to think about pagination edge cases—the system handles them automatically. This approach maintains code simplicity while solving the core scalability challenge of displaying large expense lists.
 
+#### Expenses List Default Date Range Filter Evolution
+
+A smart filtering enhancement focused on providing a more relevant default view by limiting expenses to the current year:
+
+**Initial State:**
+- Expenses list displayed all expenses regardless of date by default
+- No temporal filtering applied on initial page load
+- Users viewing expenses spanning multiple years would see everything mixed together
+- Required manual date range selection to focus on specific time periods
+- `defaultFilters` in UI store was an empty object with no date constraints
+
+**Iterative Improvements:**
+1. **Current Year Calculation Helper** - Added intelligent date range generation
+   - Created `getCurrentYearDateRange()` function to compute year boundaries dynamically
+   - Calculates start of year: January 1st at midnight (00:00:00)
+   - Calculates end of year: December 31st at 23:59:59.999
+   - Returns typed object with `startOfYear` and `endOfYear` Date objects
+   - Executes once on module load for optimal performance
+
+2. **Default Filter Enhancement** - Updated UI store to apply year filter automatically
+   - Modified `defaultFilters` to include `startDate` and `endDate` properties
+   - Uses calculated year boundaries from helper function
+   - Filter applied on initial load without user interaction
+   - Seamlessly integrates with existing filter architecture
+   - No changes needed to filter types or component interfaces
+
+3. **Date Picker Visual Feedback** - Enhanced user awareness of active filtering
+   - Date range picker now displays current year dates by default
+   - Button shows selected range (e.g., "01/01/2025 - 31/12/2025")
+   - Makes it immediately clear to users that temporal filtering is active
+   - Provides intuitive starting point for adjusting date ranges
+   - Users can easily clear or modify the date filter using existing controls
+
+4. **Reset Behavior Consistency** - Maintained expected filter reset functionality
+   - "Limpiar filtros" button now resets to current year (not all-time)
+   - Consistent with the principle that default view shows current year
+   - Prevents accidental exposure to multi-year historical data
+   - Users must explicitly adjust date range to view previous years
+   - Aligns with typical expense management workflows focused on current period
+
+This enhancement demonstrates thoughtful UX design for temporal data. By defaulting to the current year, the application provides a more focused and relevant view for most users' primary use case—managing current expenses. The implementation is clean and efficient, calculating the date range once at module initialization rather than on every render. This approach respects the existing filter architecture while improving the out-of-box experience, especially valuable for users with extensive expense history spanning multiple years. The automatic year boundary detection ensures the filter stays relevant as time progresses, requiring no manual updates when the calendar year changes.
+
 ## How to Run the Project
 
 ### Development Mode

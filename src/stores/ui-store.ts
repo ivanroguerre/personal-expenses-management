@@ -35,7 +35,20 @@ interface UIState {
   closeDeleteModal: () => void;
 }
 
-const defaultFilters: ExpenseFilters = {};
+// Helper function to get the current year date range
+const getCurrentYearDateRange = () => {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1); // January 1st
+  const endOfYear = new Date(now.getFullYear(), 11, 31, 23, 59, 59, 999); // December 31st
+  return { startOfYear, endOfYear };
+};
+
+const { startOfYear, endOfYear } = getCurrentYearDateRange();
+
+const defaultFilters: ExpenseFilters = {
+  startDate: startOfYear,
+  endDate: endOfYear,
+};
 
 const defaultSort: ExpenseSort = {
   field: 'date',
