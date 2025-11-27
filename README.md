@@ -775,6 +775,65 @@ A design consistency enhancement focused on applying the same responsive button 
 
 This enhancement demonstrates the value of establishing consistent design patterns across an application. By applying the same responsive button strategy from the dashboard to the expenses list page, the application provides a unified mobile experience where all header action buttons behave identically. This consistency reduces cognitive load for users and creates a more polished, professional appearance. The pattern of progressive enhancement—starting with compact icon-only buttons on mobile and expanding to full labeled buttons on larger screens—ensures optimal space utilization while maintaining clarity and accessibility across all device sizes.
 
+#### Dashboard Category Chart Evolution
+
+A responsive design enhancement focused on preventing pie chart overflow and improving layout on mobile devices:
+
+**Initial State:**
+- Category pie chart displayed with fixed dimensions optimized for desktop
+- Inner radius: 60px, outer radius: 100px regardless of screen size
+- Legend positioned vertically to the right of the chart
+- Chart centered at 50% vertical position in container
+- Fixed container height of 300px for all screen sizes
+- On mobile devices, the large radius and right-aligned legend caused horizontal overflow
+- Legend positioning resulted in cramped layout and content extending beyond viewport
+- No responsive design considerations for smaller screens
+
+**Iterative Improvements:**
+1. **Added Mobile Detection Hook** - Integrated existing responsive capabilities (`src/components/dashboard/expense-chart.tsx`)
+   - Imported `useIsMobile` hook from `@/hooks/use-mobile`
+   - Leverages 768px breakpoint (< 768px considered mobile)
+   - Returns boolean flag for conditional rendering based on viewport size
+   - Consistent with mobile detection patterns used throughout the application
+
+2. **Implemented Responsive Chart Sizing** - Made pie chart dimensions adapt to screen size
+   - Mobile inner radius: 40px (reduced from 60px)
+   - Mobile outer radius: 70px (reduced from 100px)
+   - Desktop maintains original dimensions: 60px inner, 100px outer
+   - Smaller radius on mobile ensures chart fits comfortably within narrow viewports
+   - Prevents horizontal overflow while maintaining readability
+
+3. **Adjusted Chart Positioning** - Modified vertical centering to accommodate legend placement
+   - Chart vertical center (`cy`) set to 40% on mobile (moved up from 50%)
+   - Desktop maintains centered 50% positioning
+   - Extra vertical space at bottom on mobile creates room for horizontal legend
+   - Balanced composition prevents chart from appearing top-heavy
+
+4. **Repositioned Legend Responsively** - Changed legend layout for optimal space usage
+   - Mobile layout: horizontal orientation below the chart
+   - Mobile alignment: centered for balanced appearance
+   - Mobile vertical alignment: bottom position
+   - Desktop layout: vertical orientation to the right of chart (original)
+   - Desktop alignment: right-aligned beside chart (original)
+   - Desktop vertical alignment: middle position (original)
+   - Legend text size maintained at 12px for consistency
+
+5. **Enhanced Container Height** - Adjusted container to accommodate new mobile layout
+   - Mobile height increased to 350px (from 300px)
+   - Additional 50px provides space for horizontal legend below chart
+   - Desktop maintains 300px height (sufficient for side legend)
+   - Prevents legend text from being cut off or requiring scroll
+
+6. **Improved Mobile User Experience** - Achieved clean, professional appearance on all devices
+   - No horizontal overflow or awkward wrapping on narrow screens
+   - All chart elements remain visible and accessible
+   - Legend items display in compact horizontal row on mobile
+   - Smooth transition between mobile and desktop layouts at breakpoint
+   - Maintains data readability with appropriately sized chart elements
+   - Consistent with responsive design patterns used in other dashboard components
+
+This responsive enhancement demonstrates the importance of mobile-first considerations in data visualization. By leveraging the existing `useIsMobile` hook and implementing conditional sizing and positioning, the pie chart now provides an optimal viewing experience across all device sizes. The strategy of reducing chart dimensions and repositioning the legend from side to bottom on mobile prevents overflow while maintaining data clarity. This pattern showcases how modern React practices with conditional rendering enable elegant responsive solutions without requiring separate components or complex CSS media queries. The enhancement aligns with the application's broader commitment to responsive design, ensuring that analytics remain accessible and useful whether accessed from desktop or mobile devices.
+
 ## How to Run the Project
 
 ### Development Mode

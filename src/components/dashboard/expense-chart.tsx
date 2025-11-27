@@ -30,6 +30,7 @@ import {
   type ExpenseCategory,
 } from "@/types/expense";
 import { CURRENCY } from "@/lib/constants";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ExpenseChartProps {
   dailyTotals?: Record<string, number>;
@@ -45,6 +46,7 @@ export function ExpenseCharts({
   isLoading,
 }: ExpenseChartProps) {
   const [selectedChart, setSelectedChart] = useState<ChartType>("daily");
+  const isMobile = useIsMobile();
 
   // Initialize with current month/year
   const [selectedYear, setSelectedYear] = useState(() =>
@@ -297,14 +299,14 @@ export function ExpenseCharts({
             </div>
           )
         ) : categoryData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={isMobile ? 350 : 300}>
             <PieChart>
               <Pie
                 data={categoryData}
                 cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
+                cy={isMobile ? "40%" : "50%"}
+                innerRadius={isMobile ? 40 : 60}
+                outerRadius={isMobile ? 70 : 100}
                 paddingAngle={2}
                 dataKey="value"
               >
@@ -324,9 +326,9 @@ export function ExpenseCharts({
                 }}
               />
               <Legend
-                layout="vertical"
-                align="right"
-                verticalAlign="middle"
+                layout={isMobile ? "horizontal" : "vertical"}
+                align={isMobile ? "center" : "right"}
+                verticalAlign={isMobile ? "bottom" : "middle"}
                 wrapperStyle={{ fontSize: "12px" }}
               />
             </PieChart>
