@@ -6,7 +6,7 @@ A modern, offline-first web application for personal expense management with ful
 
 - 📊 **Dashboard Analytics** - Visual spending insights with charts and statistics
 - 💰 **Expense Management** - Create, read, update, and delete expenses
-- 🔍 **Advanced Filtering** - Sort and filter expenses by category, date, and amount
+- 🔍 **Advanced Filtering** - Sort and filter expenses by category, date, description and amount
 - 💾 **Offline-First** - All data stored locally in IndexedDB for instant access
 - 📱 **Responsive Design** - Beautiful UI that works on all devices
 - 🎨 **Modern UI** - Built with Shadcn components and Tailwind CSS
@@ -51,7 +51,7 @@ The AI-assisted development approach enabled rapid prototyping while maintaining
 
 ### Iterative Development & Enhancements
 
-After the initial MVP was delivered, the project underwent several iterations to improve user experience and functionality. This demonstrates that AI-assisted development isn't just about the initial build—it's also effective for iterative improvements and feature refinements.
+After the initial MVP was delivered, the project underwent several iterations to improve user experience and functionality and to adjust to the project requirements. This demonstrates that AI-assisted development isn't just about the initial build—it's also effective for iterative improvements and feature refinements.
 
 #### Dashboard Chart Evolution
 
@@ -1032,41 +1032,63 @@ src/
 │   ├── layout.tsx                # Root layout with providers
 │   ├── page.tsx                  # Dashboard (home page)
 │   ├── globals.css               # Global styles and Tailwind directives
-│   ├── expenses/
-│   │   ├── page.tsx              # Expenses list table
-│   │   ├── new/
-│   │   │   └── page.tsx          # Create new expense form
-│   │   └── [id]/
-│   │       └── page.tsx          # Edit expense form
+│   ├── favicon.ico               # Application favicon
+│   └── expenses/
+│       ├── page.tsx              # Expenses list table with pagination
+│       ├── new/
+│       │   └── page.tsx          # Create new expense form
+│       └── [id]/
+│           └── page.tsx          # Edit expense form
 ├── components/
-│   ├── ui/                       # Shadcn components (Button, Card, etc.)
+│   ├── ui/                       # Shadcn UI components
+│   │   ├── badge.tsx             # Badge component for categories
+│   │   ├── button.tsx            # Button component
+│   │   ├── calendar.tsx          # Calendar/date picker component
+│   │   ├── card.tsx              # Card container component
+│   │   ├── dialog.tsx            # Modal dialog component
+│   │   ├── dropdown-menu.tsx     # Dropdown menu component
+│   │   ├── form.tsx              # Form wrapper component
+│   │   ├── input.tsx             # Text input component
+│   │   ├── label.tsx             # Form label component
+│   │   ├── popover.tsx           # Popover component
+│   │   ├── select.tsx            # Select dropdown component
+│   │   ├── separator.tsx         # Visual separator component
+│   │   ├── sheet.tsx             # Slide-out sheet component
+│   │   ├── sidebar.tsx           # Sidebar layout component
+│   │   ├── skeleton.tsx          # Loading skeleton component
+│   │   ├── sonner.tsx            # Toast notification component
+│   │   ├── table.tsx             # Table component
+│   │   └── tooltip.tsx           # Tooltip component
 │   ├── layout/
-│   │   ├── sidebar.tsx           # Navigation sidebar
-│   │   └── header.tsx            # Page header
+│   │   ├── app-sidebar.tsx       # Application navigation sidebar
+│   │   └── header.tsx            # Page header component
 │   ├── dashboard/
 │   │   ├── stats-cards.tsx       # Summary statistics cards
-│   │   ├── expense-chart.tsx     # Spending visualization chart
+│   │   ├── expense-chart.tsx     # Spending visualization charts
 │   │   └── recent-expenses.tsx   # Recent transactions list
 │   ├── expenses/
-│   │   ├── expenses-table.tsx    # Data table with sorting/filtering
-│   │   ├── expense-form.tsx      # Reusable form component
+│   │   ├── expenses-table.tsx    # Data table with sorting/filtering/pagination
+│   │   ├── expense-form.tsx      # Reusable expense form component
 │   │   ├── columns.tsx           # Table column definitions
-│   │   └── filters.tsx           # Filter controls
+│   │   ├── filters.tsx           # Filter controls (search, category, date range)
+│   │   └── delete-expense-dialog.tsx  # Delete confirmation dialog
 │   └── shared/
 │       ├── loading-skeleton.tsx  # Loading state skeletons
 │       └── error-boundary.tsx    # Error boundary component
 ├── lib/
 │   ├── db/
 │   │   ├── index.ts              # Dexie database initialization
-│   │   └── expenses.ts           # Expense CRUD operations
-│   ├── validations/              # Zod schemas for validation
+│   │   └── expenses.ts           # Expense CRUD operations & analytics
+│   ├── validations/
+│   │   └── expense.ts            # Zod validation schemas
 │   ├── utils.ts                  # Utility functions (cn, formatters)
-│   └── constants.ts              # App constants (categories, etc.)
+│   └── constants.ts              # App constants (categories, colors)
 ├── hooks/
 │   ├── use-expenses.ts           # TanStack Query hooks for data fetching
-│   └── use-expense-mutations.ts  # Mutation hooks (create/update/delete)
+│   ├── use-expense-mutations.ts  # Mutation hooks (create/update/delete)
+│   └── use-mobile.ts             # Mobile breakpoint detection hook
 ├── stores/
-│   └── ui-store.ts               # Zustand store for UI state
+│   └── ui-store.ts               # Zustand store for UI state (filters, pagination)
 ├── types/
 │   └── expense.ts                # TypeScript interfaces and types
 └── providers/
@@ -1268,7 +1290,6 @@ Potential features for future development:
 - 🏷️ Custom categories and tags
 - 📊 More advanced analytics and reports
 - 🌙 Dark mode theme
-- 🔍 Full-text search across descriptions
 - 📎 Attachment support (receipts, invoices)
 
 ## Contributing
