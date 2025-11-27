@@ -81,7 +81,7 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
                       {CATEGORY_LABELS[expense.category]}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
-                      {format(new Date(expense.date), 'MMM dd')}
+                      {format(new Date(expense.date), 'MMM dd, yyyy')}
                     </span>
                   </div>
                 </div>

@@ -83,6 +83,24 @@ One significant enhancement was the transformation of the expense analytics visu
 
 These improvements showcase how the codebase's clean architecture and separation of concerns (data layer, hooks, components) made it easy to implement significant feature changes without requiring major refactoring. The type-safe TypeScript implementation and modular component design enabled confident modifications with minimal risk of introducing bugs.
 
+#### Dashboard Recent Expenses Evolution
+
+Another refinement focused on improving the date display format in the recent expenses widget:
+
+**Initial State (MVP):**
+- Date displayed in "MMM dd" format (e.g., "Nov 27")
+- Ambiguous for expenses from previous years
+- Limited temporal context for older records
+
+**Iterative Improvements:**
+1. **Enhanced Date Format** - Expanded date display to include year information
+   - Changed from "MMM dd" to "MMM dd, yyyy" format (e.g., "Nov 27, 2025")
+   - Provides complete temporal context at a glance
+   - Particularly valuable when reviewing historical expenses
+   - Maintains compact display while adding clarity
+
+This seemingly small enhancement significantly improves data clarity, especially for users tracking expenses over multiple years. The change demonstrates how attention to UX details can make the application more intuitive and informative without adding complexity.
+
 ## How to Run the Project
 
 ### Development Mode
