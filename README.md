@@ -2,6 +2,51 @@
 
 A modern, offline-first web application for personal expense management with full CRUD functionality, analytics dashboard, and comprehensive filtering capabilities.
 
+## Table of Contents
+
+- [Features](#features)
+- [Live Demo](#-live-demo)
+- [About This Project](#about-this-project)
+  - [Iterative Development & Enhancements](#iterative-development--enhancements)
+    - [Dashboard Chart Evolution](#dashboard-chart-evolution)
+    - [Dashboard Recent Expenses Evolution](#dashboard-recent-expenses-evolution)
+    - [Dashboard Total Month Expenses Stat Evolution](#dashboard-total-month-expenses-stat-evolution)
+    - [Dashboard Daily Average Stat Evolution](#dashboard-daily-average-stat-evolution)
+    - [Dashboard Top Spending Category Evolution](#dashboard-top-spending-category-evolution)
+    - [Dashboard Redirect Buttons Evolution](#dashboard-redirect-buttons-evolution)
+    - [Dashboard Link Buttons Evolution](#dashboard-link-buttons-evolution)
+    - [Dashboard Category Chart Evolution](#dashboard-category-chart-evolution)
+    - [Expenses List Language Evolution](#expenses-list-language-evolution)
+    - [Expenses List Actions Language Evolution](#expenses-list-actions-language-evolution)
+    - [Expenses List Date Range Evolution](#expenses-list-date-range-evolution)
+    - [Expenses List Date Range Language Evolution](#expenses-list-date-range-language-evolution)
+    - [Expenses List Column Order Evolution](#expenses-list-column-order-evolution)
+    - [Expenses List Pagination Evolution](#expenses-list-pagination-evolution)
+    - [Expenses List Default Date Range Filter Evolution](#expenses-list-default-date-range-filter-evolution)
+    - [Expenses List Header Button Responsiveness Evolution](#expenses-list-header-button-responsiveness-evolution)
+    - [Add/Edit Expenses Language Evolution](#addedit-expenses-language-evolution)
+    - [Add/Edit Expenses Field Order Evolution](#addedit-expenses-field-order-evolution)
+    - [Add/Edit Expenses Categories Language Evolution](#addedit-expenses-categories-language-evolution)
+    - [Sidebar Language Evolution](#sidebar-language-evolution)
+- [How to Run the Project](#how-to-run-the-project)
+  - [Development Mode](#development-mode)
+  - [Production Build](#production-build)
+  - [Code Quality](#code-quality)
+- [Technical Decisions & Architecture](#technical-decisions--architecture)
+  - [Technology Stack](#technology-stack)
+  - [Project Architecture](#project-architecture)
+  - [Key Architectural Decisions](#key-architectural-decisions)
+  - [Development Workflow](#development-workflow)
+  - [Database Management](#database-management)
+- [Browser Compatibility](#browser-compatibility)
+- [Future Enhancements](#future-enhancements)
+- [Potential AI Integration](#potential-ai-integration)
+  - [AI Workflow Design & Agentic Pattern](#1-ai-workflow-design--agentic-pattern)
+  - [Integration with Existing Architecture](#2-integration-with-existing-architecture)
+  - [State, Error, and Latency Considerations](#3-state-error-and-latency-considerations)
+  - [Agentic AI Workflow Diagram](#4-agentic-ai-workflow-diagram)
+- [Contributing](#contributing)
+
 ## Features
 
 - 📊 **Dashboard Analytics** - Visual spending insights with charts and statistics
