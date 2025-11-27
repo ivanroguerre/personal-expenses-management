@@ -47,7 +47,7 @@ export function ExpenseCharts({
       const [year, monthNum] = month.split('-');
       const date = new Date(parseInt(year), parseInt(monthNum) - 1);
       return {
-        month: date.toLocaleDateString('en-US', {
+        month: date.toLocaleDateString('es-ES', {
           month: 'short',
           year: '2-digit',
         }),
@@ -101,7 +101,7 @@ export function ExpenseCharts({
     <div className="grid gap-4 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Monthly Spending</CardTitle>
+          <CardTitle className="text-base">Gasto Mensual</CardTitle>
         </CardHeader>
         <CardContent>
           {monthlyData.length > 0 ? (
@@ -137,7 +137,7 @@ export function ExpenseCharts({
             </ResponsiveContainer>
           ) : (
             <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-              No data to display
+              No hay datos para mostrar
             </div>
           )}
         </CardContent>
@@ -145,7 +145,7 @@ export function ExpenseCharts({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Spending by Category</CardTitle>
+          <CardTitle className="text-base">Gastos por Categoría</CardTitle>
         </CardHeader>
         <CardContent>
           {categoryData.length > 0 ? (
@@ -165,7 +165,7 @@ export function ExpenseCharts({
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => [formatTooltipValue(value), 'Amount']}
+                  formatter={(value: number) => [formatTooltipValue(value), 'Monto']}
                   contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
@@ -182,7 +182,7 @@ export function ExpenseCharts({
             </ResponsiveContainer>
           ) : (
             <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-              No data to display
+              No hay datos para mostrar
             </div>
           )}
         </CardContent>

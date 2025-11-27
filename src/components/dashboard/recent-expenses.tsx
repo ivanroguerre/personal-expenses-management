@@ -28,7 +28,7 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Recent Expenses</CardTitle>
+          <CardTitle className="text-base">Gastos Recientes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -54,7 +54,7 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Recent Expenses</CardTitle>
+        <CardTitle className="text-base">Gastos Recientes</CardTitle>
       </CardHeader>
       <CardContent>
         {expenses && expenses.length > 0 ? (
@@ -93,9 +93,9 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <p className="text-sm text-muted-foreground">No expenses yet</p>
+            <p className="text-sm text-muted-foreground">Aún no hay gastos</p>
             <Button asChild variant="link" className="mt-2">
-              <Link href="/expenses/new">Add your first expense</Link>
+              <Link href="/expenses/new">Agregar tu primer gasto</Link>
             </Button>
           </div>
         )}
@@ -104,7 +104,7 @@ export function RecentExpenses({ expenses, isLoading }: RecentExpensesProps) {
         <CardFooter>
           <Button asChild variant="ghost" className="w-full">
             <Link href="/expenses">
-              View all expenses
+              Ver todos los gastos
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

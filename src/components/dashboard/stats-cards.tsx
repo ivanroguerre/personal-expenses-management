@@ -56,19 +56,19 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
 
   const cards = [
     {
-      title: 'Total Spent',
+      title: 'Total Gastado',
       value: formatCurrency(stats.totalAmount),
-      description: `${stats.totalExpenses} total expenses`,
+      description: `${stats.totalExpenses} gastos totales`,
       icon: DollarSign,
       iconColor: 'text-emerald-500',
     },
     {
-      title: 'This Month',
+      title: 'Este Mes',
       value: formatCurrency(stats.totalThisMonth),
       description:
         stats.monthlyChange !== 0
-          ? `${stats.monthlyChange > 0 ? '+' : ''}${stats.monthlyChange.toFixed(1)}% from last month`
-          : 'No change from last month',
+          ? `${stats.monthlyChange > 0 ? '+' : ''}${stats.monthlyChange.toFixed(1)}% desde el mes pasado`
+          : 'Sin cambios desde el mes pasado',
       icon: stats.monthlyChange >= 0 ? TrendingUp : TrendingDown,
       iconColor:
         stats.monthlyChange > 0
@@ -78,16 +78,16 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
             : 'text-muted-foreground',
     },
     {
-      title: 'Last Month',
+      title: 'Mes Anterior',
       value: formatCurrency(stats.totalLastMonth),
-      description: 'Previous month total',
+      description: 'Total del mes anterior',
       icon: Receipt,
       iconColor: 'text-blue-500',
     },
     {
-      title: 'Average',
+      title: 'Promedio',
       value: formatCurrency(stats.averageExpense),
-      description: 'Per expense',
+      description: 'Por gasto',
       icon: Calculator,
       iconColor: 'text-purple-500',
     },

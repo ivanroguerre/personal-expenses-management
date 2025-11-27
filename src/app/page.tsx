@@ -17,13 +17,13 @@ export default function DashboardPage() {
   return (
     <>
       <Header
-        title="Dashboard"
-        description="Overview of your spending habits"
+        title="Panel de Control"
+        description="Resumen de tus hábitos de gasto"
       >
         <Button asChild>
           <Link href="/expenses/new">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Add Expense
+            Agregar Gasto
           </Link>
         </Button>
       </Header>
@@ -31,7 +31,7 @@ export default function DashboardPage() {
         {statsError ? (
           <div className="rounded-md border border-destructive bg-destructive/10 p-4">
             <p className="text-sm text-destructive">
-              Failed to load dashboard data. Please refresh the page.
+              Error al cargar los datos del panel. Por favor, recarga la página.
             </p>
           </div>
         ) : (
